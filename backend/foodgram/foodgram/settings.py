@@ -1,14 +1,19 @@
 from pathlib import Path
+from dotenv import load_dotenv
 
+import os
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-=qok0(ndw*&y5qx@6*lxv3*p3m5%hu9xz@9x(s04ug@th=916%'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = (os.getenv('ALLOWED_HOSTS', default='127.0.0.1, localhost')).split(', ')
 
+INTERNAL_IPS = (os.getenv('INTERNAL_IPS', default='127.0.0.1, localhost')).split(', ')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,6 +26,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'import_export',
     'rest_framework',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -31,6 +37,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
@@ -57,16 +64,11 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'foodgram_db',
-        # # "OPTIONS": {
-        # #     "service": "my_service",
-        # #     "passfile": ".my_pgpass",
-        # # },
-        # 'NAME': 'foodgram_db',
-        'USER': 'foodgram_db_user',
-        'PASSWORD': 'foodgram_db_password',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
 }
 
@@ -90,6 +92,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

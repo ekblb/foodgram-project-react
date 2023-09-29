@@ -2,21 +2,8 @@ from django.db import models
 from users.models import CustomUser
 
 
-class Ingredient(models.Model):
-    name = models.CharField(
-        verbose_name='Название',
-        max_length=200,
-        )
-    measurement_unit = models.CharField(
-        verbose_name='Измеряемая единица',
-        max_length=200,
-        )
-    # amount = models.PositiveIntegerField(
-    #     verbose_name='Количество',
-    # )
-
-    def __str__(self) -> str:
-        return f'{self.name}'
+def user_directory_path(instance, filename):
+    return 'user_{0}/{1}'.format(instance.author.id, filename)
 
 
 class Tag(models.Model):
@@ -36,18 +23,29 @@ class Tag(models.Model):
         max_length=200,
         )
 
+    def __str__(self):
+        return f'{self.name}'
+
+
+class Ingredient(models.Model):
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=200,
+        )
+    measurement_unit = models.CharField(
+        verbose_name='Измеряемая единица',
+        max_length=200,
+        )
+
     def __str__(self) -> str:
-        return self.name
-
-
-def user_directory_path(instance, filename):
-    return 'user_{0}/{1}'.format(instance.author.id, filename)
+        return f'{self.name}'
 
 
 class Recipe(models.Model):
     author = models.ForeignKey(
         CustomUser,
         verbose_name='Автор публикации',
+        related_name='recipes',
         on_delete=models.CASCADE,
         )
     name = models.CharField(
@@ -65,10 +63,12 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         verbose_name='Список ингредиентов',
+        through='RecipeIngredients',
+        through_fields=('recipe', 'ingredient',),
         )
     tags = models.ManyToManyField(
         Tag,
-        verbose_name='Список id тегов',
+        verbose_name='Список тегов',
         )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления (мин.)',
@@ -76,6 +76,29 @@ class Recipe(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class RecipeIngredients(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Название рецепта',
+        on_delete=models.CASCADE,
+        )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        verbose_name='Ингредиент в рецепте',
+        on_delete=models.CASCADE,
+        )
+    amount = models.PositiveIntegerField(
+        verbose_name='Количество',
+    )
+
+    class Meta:
+        verbose_name = 'RecipeIngredient'
+        verbose_name_plural = 'RecipeIngredients'
+
+    def __str__(self) -> str:
+        return f'{self.ingredient}'
 
 
 class Favorite(models.Model):
