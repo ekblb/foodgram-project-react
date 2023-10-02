@@ -1,9 +1,21 @@
 from rest_framework import viewsets
-from .models import Recipe, Tag, Ingredient
+from .models import (
+    Recipe,
+    Tag,
+    Ingredient,
+    Subscription,
+    FavoriteRecipe,
+    ShoppingCart,
+    )
 from .serializers import (
     RecipeSerializer,
     TagSerializer,
-    IngredientSerializer)
+    IngredientSerializer,
+    SubscriptionSerializer,
+    FavoriteRecipeSerializer,
+    ShoppingCartSerializer,
+    )
+from .mixins import ListCreateDestroyMixinSet, CreateDestroyMixinSet
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -24,3 +36,21 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
+
+
+class SubscriptionViewSet(ListCreateDestroyMixinSet):
+    '''Class for viewing subscriptions.'''
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+
+
+class FavoriteRecipeViewSet(CreateDestroyMixinSet):
+    '''Class for viewing favorite recipes.'''
+    queryset = FavoriteRecipe.objects.all()
+    serializer_class = FavoriteRecipeSerializer
+
+
+class ShoppingCartViewSet(ListCreateDestroyMixinSet):
+    '''Class for viewing favorite recipes.'''
+    queryset = ShoppingCart.objects.all()
+    serializer_class = ShoppingCartSerializer

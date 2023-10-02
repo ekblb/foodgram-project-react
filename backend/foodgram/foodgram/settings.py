@@ -15,6 +15,7 @@ ALLOWED_HOSTS = (os.getenv('ALLOWED_HOSTS', default='127.0.0.1, localhost')).spl
 
 INTERNAL_IPS = (os.getenv('INTERNAL_IPS', default='127.0.0.1, localhost')).split(', ')
 
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

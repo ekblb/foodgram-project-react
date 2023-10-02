@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
-from .models import Ingredient, Recipe, Tag, RecipeIngredients
+from .models import (Ingredient,
+                     Recipe,
+                     Tag,
+                     IngredientInRecipe,
+                     Subscription,
+                     FavoriteRecipe,
+                     ShoppingCart,
+                     )
 
 
 class Base64ImageField(serializers.ImageField):
@@ -45,27 +52,27 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'color', 'slug', ]
 
 
-class RecipeIngredientsSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = RecipeIngredients
-        fields = ['amount', ]
-
-
 class IngredientSerializer(serializers.ModelSerializer):
-    amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Ingredient
-        fields = ['id', 'name', 'measurement_unit', 'amount', ]
+        fields = ['id', 'name', 'measurement_unit', ]
 
-    def get_amount(self, obj):
-        return 'amount'
+
+class IngredientInRecipeSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='ingredient.name')
+    measurement_unit = serializers.CharField(
+        source='ingredient.measurement_unit',
+        )
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = ['id', 'name', 'measurement_unit', 'amount', ]
 
 
 class RecipeSerializer(serializers.ModelSerializer):
 
-    ingredients = IngredientSerializer(many=True, )
+    ingredients = IngredientInRecipeSerializer(many=True)
     tags = TagSerializer(many=True)
     image = Base64ImageField()
 
@@ -75,3 +82,24 @@ class RecipeSerializer(serializers.ModelSerializer):
            'id', 'author', 'name', 'image', 'text', 'ingredients',
            'tags', 'cooking_time',
         ]
+
+
+class FavoriteRecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FavoriteRecipe
+        fields = ['id', 'recipe', 'user', ]
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscription
+        fields = ['id', 'author', 'user', ]
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ShoppingCart
+        fields = ['recipe', 'user', ]

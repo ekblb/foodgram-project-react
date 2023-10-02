@@ -1,5 +1,13 @@
 from django.contrib import admin
-from .models import Recipe, RecipeIngredients, Ingredient, Tag
+from .models import (
+    Recipe,
+    IngredientInRecipe,
+    Ingredient,
+    Tag,
+    Subscription,
+    FavoriteRecipe,
+    ShoppingCart,
+    )
 
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
@@ -12,22 +20,40 @@ class IngredientResource(resources.ModelResource):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'author', ]
+    list_display = ['id', 'name', 'author', ]
     list_filter = ['author', 'name', 'tags', ]
 
 
 @admin.register(Ingredient)
 class IngredientAdmin(ImportExportModelAdmin):
     resource_class = IngredientResource
-    list_display = ['name', 'measurement_unit', ]
+    list_display = ['id', 'name', 'measurement_unit', ]
     list_filter = ['name', ]
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ['name', 'color', 'slug', ]
+    list_display = ['id', 'name', 'color', 'slug', ]
 
 
-@admin.register(RecipeIngredients)
-class RecipeIngredientsAdmin(admin.ModelAdmin):
-    list_display = ['recipe', 'ingredient', 'amount']
+@admin.register(IngredientInRecipe)
+class IngredientInRecipeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'ingredient', 'amount']
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ['id', 'author', 'user', ]
+    list_filter = ['author', 'user', ]
+
+
+@admin.register(FavoriteRecipe)
+class FavoriteRecipeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'recipe', 'user', ]
+    list_filter = ['recipe', 'user', ]
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ['id', 'recipe', 'user', ]
+    list_filter = ['recipe', 'user', ]

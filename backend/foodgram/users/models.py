@@ -24,3 +24,7 @@ class CustomUser(AbstractUser):
         verbose_name='Пароль',
         max_length=150,
         )
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'

@@ -1,0 +1,17 @@
+###
+
+POST http://127.0.0.1:8000/api/users/
+Content-Type: application/json
+
+{
+  "email": "testuser@yandex.ru",
+  "username": "testuser",
+  "first_name": "test",
+  "last_name": "user",
+  "password": "1235TEST"
+}
+
+###
+
+GET http://127.0.0.1:8000/api/users/
+Content-Type: application/json
