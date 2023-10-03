@@ -1,27 +1,43 @@
 from rest_framework import viewsets
-from .models import (
-    Recipe,
-    Tag,
-    Ingredient,
-    Subscription,
-    FavoriteRecipe,
-    ShoppingCart,
-    )
-from .serializers import (
-    RecipeSerializer,
-    TagSerializer,
-    IngredientSerializer,
-    SubscriptionSerializer,
-    FavoriteRecipeSerializer,
-    ShoppingCartSerializer,
-    )
-from .mixins import ListCreateDestroyMixinSet, CreateDestroyMixinSet
+# from rest_framework.decorators import action
+# from rest_framework.response import Response
+from .models import (Recipe, Tag, Ingredient, FavoriteRecipe, ShoppingCart,)
+from .serializers import (RecipeGetSerializer, RecipePostSerializer,
+                          TagSerializer,
+                          IngredientSerializer, FavoriteRecipeSerializer,
+                          ShoppingCartSerializer,)
+from .mixins import CreateDestroyMixinSet
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     '''Class for viewing recipes.'''
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+
+    def get_serializer_class(self):
+        if self.request == 'POST':
+            return RecipePostSerializer
+        return RecipeGetSerializer
+
+    # @action(url_path='download_shopping_cart')
+    # def download_shopping_cart(self, request):
+
+    # def get_serializer_class(self):
+    #     if self.action == 'shopping_cart':
+    #         return ShoppingCartSerializer
+    #     return RecipeSerializer
+
+    # @action(methods=['post'],
+    #         detail=True, url_path='shopping_cart')
+    # def shopping_cart(self, request, pk=None):
+    #     if request.method == 'POST':
+    #         serializer = ShoppingCartSerializer(data=request.data)
+    #         if serializer.is_valid():
+    #             serializer.save()
+    #             ShoppingCart.objects.create(recipe=pk, user=request.user)
+    #             return Response(serializer.data,
+    #                             status=status.HTTP_201_CREATED)
+    #         return Response(serializer.errors,
+    #                         status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -38,19 +54,14 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
 
 
-class SubscriptionViewSet(ListCreateDestroyMixinSet):
-    '''Class for viewing subscriptions.'''
-    queryset = Subscription.objects.all()
-    serializer_class = SubscriptionSerializer
-
-
 class FavoriteRecipeViewSet(CreateDestroyMixinSet):
     '''Class for viewing favorite recipes.'''
     queryset = FavoriteRecipe.objects.all()
     serializer_class = FavoriteRecipeSerializer
 
 
-class ShoppingCartViewSet(ListCreateDestroyMixinSet):
+# class ShoppingCartViewSet(ListCreateDestroyMixinSet):
+class ShoppingCartViewSet(viewsets.ModelViewSet):
     '''Class for viewing favorite recipes.'''
     queryset = ShoppingCart.objects.all()
     serializer_class = ShoppingCartSerializer

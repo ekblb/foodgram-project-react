@@ -1,13 +1,6 @@
 from django.contrib import admin
-from .models import (
-    Recipe,
-    IngredientInRecipe,
-    Ingredient,
-    Tag,
-    Subscription,
-    FavoriteRecipe,
-    ShoppingCart,
-    )
+from .models import (Recipe, IngredientInRecipe, Ingredient,
+                     Tag, FavoriteRecipe, ShoppingCart,)
 
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
@@ -39,12 +32,6 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(IngredientInRecipe)
 class IngredientInRecipeAdmin(admin.ModelAdmin):
     list_display = ['id', 'ingredient', 'amount']
-
-
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ['id', 'author', 'user', ]
-    list_filter = ['author', 'user', ]
 
 
 @admin.register(FavoriteRecipe)

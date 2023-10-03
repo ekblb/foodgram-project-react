@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, Subscription
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -8,3 +8,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = [
             'email', 'id', 'username', 'first_name', 'last_name',
         ]
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscription
+        fields = ['id', 'author', 'user', ]
