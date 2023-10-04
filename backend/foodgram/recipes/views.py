@@ -1,50 +1,35 @@
-from rest_framework import viewsets
-# from rest_framework.decorators import action
-# from rest_framework.response import Response
+from rest_framework import viewsets, permissions
 from .models import (Recipe, Tag, Ingredient, FavoriteRecipe, ShoppingCart,)
 from .serializers import (RecipeGetSerializer, RecipePostSerializer,
-                          TagSerializer,
-                          IngredientSerializer, FavoriteRecipeSerializer,
-                          ShoppingCartSerializer,)
+                          TagGetSerializer, IngredientSerializer,
+                          FavoriteRecipeSerializer, ShoppingCartSerializer,
+                          )
 from .mixins import CreateDestroyMixinSet
+from .permissions import AuthorOnly
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     '''Class for viewing recipes.'''
     queryset = Recipe.objects.all()
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_serializer_class(self):
-        if self.request == 'POST':
+        if self.request.method in ['POST', 'PATCH']:
             return RecipePostSerializer
         return RecipeGetSerializer
 
-    # @action(url_path='download_shopping_cart')
-    # def download_shopping_cart(self, request):
-
-    # def get_serializer_class(self):
-    #     if self.action == 'shopping_cart':
-    #         return ShoppingCartSerializer
-    #     return RecipeSerializer
-
-    # @action(methods=['post'],
-    #         detail=True, url_path='shopping_cart')
-    # def shopping_cart(self, request, pk=None):
-    #     if request.method == 'POST':
-    #         serializer = ShoppingCartSerializer(data=request.data)
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #             ShoppingCart.objects.create(recipe=pk, user=request.user)
-    #             return Response(serializer.data,
-    #                             status=status.HTTP_201_CREATED)
-    #         return Response(serializer.errors,
-    #                         status=status.HTTP_400_BAD_REQUEST)
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return (AuthorOnly(),)
+        return super().get_permissions()
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     '''Class for viewing tags.'''
     queryset = Tag.objects.all()
-    serializer_class = TagSerializer
+    serializer_class = TagGetSerializer
     pagination_class = None
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -52,6 +37,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
 
 
 class FavoriteRecipeViewSet(CreateDestroyMixinSet):
@@ -60,7 +46,6 @@ class FavoriteRecipeViewSet(CreateDestroyMixinSet):
     serializer_class = FavoriteRecipeSerializer
 
 
-# class ShoppingCartViewSet(ListCreateDestroyMixinSet):
 class ShoppingCartViewSet(viewsets.ModelViewSet):
     '''Class for viewing favorite recipes.'''
     queryset = ShoppingCart.objects.all()

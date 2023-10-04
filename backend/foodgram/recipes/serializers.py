@@ -1,11 +1,7 @@
-from rest_framework import serializers, request
+from rest_framework import serializers
 
-from .models import (Ingredient,
-                     Recipe,
-                     Tag,
-                     IngredientInRecipe,
-                     FavoriteRecipe,
-                     ShoppingCart,
+from .models import (Ingredient, Recipe, Tag, IngredientInRecipe,
+                     FavoriteRecipe, ShoppingCart,
                      )
 from users.serializers import CustomUserSerializer
 
@@ -45,11 +41,18 @@ class Base64ImageField(serializers.ImageField):
         return extension
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
         fields = ['id', 'name', 'color', 'slug', ]
+
+
+class TagPostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag
+        fields = ['id']
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -71,18 +74,19 @@ class IngredientInRecipeGetSerializer(serializers.ModelSerializer):
 
 
 class IngredientInRecipePostSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='ingredient')
 
     class Meta:
         model = IngredientInRecipe
-        fields = ['ingredient', 'amount', ]
+        fields = ['id', 'amount', ]
 
 
 class RecipeGetSerializer(serializers.ModelSerializer):
 
     author = CustomUserSerializer()
     ingredients = IngredientInRecipeGetSerializer(many=True)
-    tags = TagSerializer(many=True)
-    image = Base64ImageField()
+    tags = TagGetSerializer(many=True)
+    # image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -99,7 +103,8 @@ class RecipeGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = [
-           'id', 'author', 'is_favorited', 'is_in_shopping_cart', 'name', 'image', 'text', 'ingredients',
+           'id', 'author', 'is_favorited', 'is_in_shopping_cart',
+           'name', 'image', 'text', 'ingredients',
            'tags', 'cooking_time'
         ]
 
@@ -107,7 +112,8 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 class RecipePostSerializer(serializers.ModelSerializer):
 
     ingredients = IngredientInRecipePostSerializer(many=True)
-    tags = TagSerializer(many=True)
+    tags = serializers.PrimaryKeyRelatedField(many=True, read_only='True')
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
