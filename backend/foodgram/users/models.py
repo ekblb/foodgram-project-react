@@ -3,9 +3,11 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
+
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
         max_length=254,
+        unique=True,
         )
     username = models.CharField(
         verbose_name='Username',
@@ -24,6 +26,9 @@ class CustomUser(AbstractUser):
         verbose_name='Пароль',
         max_length=150,
         )
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', ]
 
     class Meta:
         verbose_name = 'Пользователь'

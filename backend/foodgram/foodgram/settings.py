@@ -1,6 +1,7 @@
 from pathlib import Path
 from dotenv import load_dotenv
 
+
 import os
 
 load_dotenv()
@@ -11,9 +12,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
-ALLOWED_HOSTS = (os.getenv('ALLOWED_HOSTS', default='127.0.0.1, localhost')).split(', ')
+ALLOWED_HOSTS = (os.getenv(
+    'ALLOWED_HOSTS', default='127.0.0.1, localhost')).split(', ')
 
-INTERNAL_IPS = (os.getenv('INTERNAL_IPS', default='127.0.0.1, localhost')).split(', ')
+INTERNAL_IPS = (os.getenv(
+    'INTERNAL_IPS', default='127.0.0.1, localhost')).split(', ')
 
 
 INSTALLED_APPS = [
@@ -27,7 +30,10 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'import_export',
     'rest_framework',
+    'rest_framework.authtoken',
     'debug_toolbar',
+    'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -93,10 +99,26 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user': 'users.serializers.CustomUserRetrieveSerializer',
+    }
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated', 
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

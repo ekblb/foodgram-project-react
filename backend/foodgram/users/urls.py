@@ -1,15 +1,11 @@
 # from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CustomUserViewSet, SubscriptionViewSet
+from .views import SubscriptionViewSet
 
 
 router = DefaultRouter()
 
-router.register(r'', CustomUserViewSet, basename='users')
-router.register(r'subscriptions',
-                SubscriptionViewSet,
-                basename='subscriptions'
-                )
+router.register(r'', SubscriptionViewSet, basename='subscriptions',)
 
 
 urlpatterns = router.urls
