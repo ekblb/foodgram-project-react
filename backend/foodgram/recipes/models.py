@@ -35,6 +35,7 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название',
+        unique=True,
         max_length=200,
         )
     measurement_unit = models.CharField(
@@ -81,6 +82,7 @@ class Recipe(models.Model):
     name = models.CharField(
         verbose_name='Название',
         max_length=200,
+        unique=True,
         )
     image = models.ImageField(
         verbose_name='Картинка',
@@ -134,6 +136,12 @@ class FavoriteRecipe(models.Model):
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique_favorite_recipe'
+            )
+        ]
 
     def __str__(self) -> str:
         return f'{self.recipe}'
@@ -156,6 +164,12 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique_shopping_cart_recipe'
+            )
+        ]
 
     def __str__(self) -> str:
         return f'{self.recipe}'

@@ -138,14 +138,15 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    name = serializers.ReadOnlyField()
-    cooking_time = serializers.ReadOnlyField()
     image = Base64ImageField(read_only=True)
 
     class Meta:
         model = Recipe
         fields = [
            'id', 'name', 'image', 'cooking_time',
+        ]
+        read_only_fields = [
+            'name', 'cooking_time'
         ]
 
 
