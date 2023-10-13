@@ -35,7 +35,6 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название',
-        unique=True,
         max_length=200,
         )
     measurement_unit = models.CharField(
@@ -82,7 +81,6 @@ class Recipe(models.Model):
     name = models.CharField(
         verbose_name='Название',
         max_length=200,
-        unique=True,
         )
     image = models.ImageField(
         verbose_name='Картинка',

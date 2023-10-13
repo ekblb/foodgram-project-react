@@ -13,7 +13,7 @@ class IngredientResource(resources.ModelResource):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'author', ]
+    list_display = ['id', 'name', 'author', 'author_id', ]
     list_filter = ['author', 'name', 'tags', ]
 
 
@@ -37,7 +37,7 @@ class IngredientInRecipeAdmin(admin.ModelAdmin):
 @admin.register(FavoriteRecipe)
 class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = ['id', 'recipe', 'user', ]
-    list_filter = ['recipe', 'user', ]
+    list_filter = ['recipe', 'user',  ]
 
 
 @admin.register(ShoppingCart)

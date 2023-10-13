@@ -7,6 +7,7 @@ from .models import CustomUser, Subscription
 from .serializers import (CustomUserRetrieveSerializer,
                           CustomUserCreateSerializer,
                           SubscriptionRetrieveSerializer,
+                          CustomUserSubscribeCreateSerializer
                           )
 
 
@@ -30,10 +31,13 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         author = get_object_or_404(CustomUser, id=pk)
 
         if request.method == 'POST':
-            serializer = CustomUserCreateSerializer(author,
-                                                    data=request.data,
-                                                    context={'request': request}
-                                                    )
+            if request.user.id == author.id:
+                return Response({'errors': 'Подписка на самого себя невозможна.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            serializer = CustomUserSubscribeCreateSerializer(author,
+                                                             data=request.data,
+                                                             context={'request': request}
+                                                             )
             if serializer.is_valid():
                 if not Subscription.objects.filter(author=author,
                                                    user=request.user).exists():
