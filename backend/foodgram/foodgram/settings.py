@@ -1,8 +1,7 @@
-from pathlib import Path
-from dotenv import load_dotenv
-
-
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -10,7 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+# DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+DEBUG = True
 
 ALLOWED_HOSTS = (os.getenv(
     'ALLOWED_HOSTS', default='127.0.0.1, localhost')).split(', ')
@@ -103,7 +103,11 @@ AUTH_PASSWORD_VALIDATORS = [
 DJOSER = {
     'SERIALIZERS': {
         'user': 'users.serializers.CustomUserRetrieveSerializer',
-    }
+        'user_create': 'users.serializers.CustomUserRetrieveSerializer',
+    },
+    # 'HIDE_USERS': {
+    #     False,
+    # }
 }
 
 REST_FRAMEWORK = {
@@ -136,10 +140,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 MEDIA_ROOT = f'{BASE_DIR}/foodgram/media'
+MEDIA_URL = '/foodgram/media/'
 
-MEDIA_URL = 'foodgram/media/'
-
-STATIC_URL = 'static/'
+STATIC_URL = '/static_backend/'
+STATIC_ROOT = BASE_DIR / 'static_backend'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

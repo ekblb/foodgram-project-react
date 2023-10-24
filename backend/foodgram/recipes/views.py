@@ -1,23 +1,20 @@
-from rest_framework import viewsets, permissions, status
+# import io
+
+# from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404, get_list_or_404
-from django.http import FileResponse
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import letter
-import io
 
+from foodgram.permissions import AuthorOnly
 
-from .models import (Recipe, Tag, Ingredient, FavoriteRecipe, ShoppingCart)
-from .serializers import (RecipeSerializer, RecipeRetrieveSerializer,
-                          RecipeCreateSerializer,
-                          TagSerializer, IngredientSerializer,
-                          ShoppingCartSerializer,
-                          )
-from .permissions import AuthorOnly
 from .filters import RecipeFilters
+from .models import (FavoriteRecipe, Ingredient, Recipe,
+                     ShoppingCart, Tag)
+from .serializers import (IngredientSerializer, RecipeCreateSerializer,
+                          RecipeRetrieveSerializer, RecipeSerializer,
+                          TagSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -26,11 +23,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilters
-
-    # def get_serializer_class(self):
-    #     if self.action in ['create', 'update']:
-    #         return RecipeCreateSerializer
-    #     return RecipeRetrieveSerializer
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH']:
@@ -60,52 +52,39 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                                      user=request.user
                                                      ).exists():
                     FavoriteRecipe.objects.create(recipe=recipe,
-                                                  user=request.user)
+                                                  user=request.user
+                                                  )
                     return Response(serializer.data,
-                                    status=status.HTTP_201_CREATED)
+                                    status=status.HTTP_201_CREATED
+                                    )
                 return Response(
                     {'errors': 'Рецепт уже добавлен в список избранных.'},
-                    status=status.HTTP_400_BAD_REQUEST)
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
             return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST
+                            )
 
         if request.method == 'DELETE':
             recipe_delete = FavoriteRecipe.objects.filter(recipe=recipe,
-                                                          user=request.user)
+                                                          user=request.user
+                                                          )
             if recipe_delete.exists():
                 recipe_delete.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {'errors': 'Такого рецепта нет в списке избранных.'},
-                status=status.HTTP_400_BAD_REQUEST)
+                status=status.HTTP_400_BAD_REQUEST
+                )
 
-    @action(methods=['GET'], detail=False, permission_classes=AuthorOnly)
-    def download_shopping_cart(self, request):
-        # user = request.user
-        # shopping_cart = get_list_or_404(ShoppingCart, user=user)
-        # serializer = ShoppingCartSerializer(data=shopping_cart, many=True)
-        # return Response(serializer.data, status=status.HTTP_200_OK)
+    # @action(methods=['GET'], detail=False)
+    # def download_shopping_cart(self, request):
+    #     # user = request.user
+    #     # shopping_cart = ShoppingCart.objects.filter(user=user)
+    #     # serializer = ShoppingCartSerializer(shopping_cart, many=True)
 
-        buf = io.BytesIO
-        c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-        textob = c.beginText()
-        textob.setTextOrigin(inch, inch)
-        textob.setFont('Helvetica', 14)
-
-        lines = [
-            'text1',
-            'text2',
-        ]
-
-        for line in lines:
-            textob.textLine(line)
-
-        c.drawText(textob)
-        c.showPage()
-        c.save()
-        buf.seek(0)
-
-        return FileResponse(buf, as_attachment=True, filename='shopping_cart.pdf')
+    #     return FileResponse(buf, as_attachment=True,
+    #                         filename='shopping_cart.pdf')
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
@@ -132,7 +111,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {'errors': 'Рецепт уже добавлен в список покупок.'},
                     status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST
+                            )
 
         if request.method == 'DELETE':
             recipe_delete = ShoppingCart.objects.filter(recipe=recipe,
@@ -141,7 +121,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe_delete.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response({'errors': 'Такого рецепта нет в списке покупок.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST
+                            )
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

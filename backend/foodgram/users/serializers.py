@@ -1,18 +1,25 @@
-from rest_framework import serializers
-from .models import CustomUser, Subscription
+from django.contrib.auth.hashers import make_password
 from recipes.models import Recipe
+from rest_framework import serializers
+
+from .models import CustomUser, Subscription
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
         fields = [
-            'email', 'id', 'username', 'first_name', 'last_name',
+            'email', 'id', 'username', 'first_name', 'last_name', 'password',
         ]
-        read_only_fields = [
-            'email', 'username', 'first_name', 'last_name',
-        ]
+
+    def create(self, validated_data):
+        hash_password = make_password(validated_data.pop('password'))
+        new_custom_user = CustomUser.objects.create(password=hash_password,
+                                                    **validated_data
+                                                    )
+        return new_custom_user
 
 
 class SubscriptionRecipeSerializer(serializers.ModelSerializer):
@@ -47,8 +54,8 @@ class CustomUserSubscribeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = [
-            'email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed',
-            'recipes', 'recipes_count',
+            'email', 'id', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count',
         ]
         read_only_fields = [
             'email', 'username', 'first_name', 'last_name',
@@ -59,7 +66,7 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
-        if self.context.get('request').user.is_authenticated:
+        if self.context.get('request'):
             if Subscription.objects.filter(
                 author=obj.id, user=self.context.get('request').user.id
             ).exists():
