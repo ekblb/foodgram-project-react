@@ -8,7 +8,8 @@ from .models import CustomUser, Subscription
 from .serializers import (CustomUserCreateSerializer,
                           CustomUserRetrieveSerializer,
                           CustomUserSubscribeCreateSerializer,
-                          SubscriptionRetrieveSerializer)
+                          SubscriptionRetrieveSerializer,
+                          )
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -55,9 +56,13 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     @action(methods=['GET'], detail=False)
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
-        user = request.user
-        subscriptions = get_list_or_404(Subscription, user=user)
-        serializer = SubscriptionRetrieveSerializer(subscriptions, many=True)
+        subscriptions = get_list_or_404(Subscription, user=request.user)
+        # subscriptions = Subscription.objects.filter(
+        #     user=request.user).select_related('author')
+
+        serializer = SubscriptionRetrieveSerializer(subscriptions,
+                                                    context={'request': request},
+                                                    many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=['POST', 'DELETE'], detail=True)

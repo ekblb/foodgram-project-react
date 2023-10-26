@@ -101,19 +101,21 @@ class SubscriptionRetrieveSerializer(serializers.ModelSerializer):
     username = serializers.EmailField(source='author.username')
     first_name = serializers.CharField(source='author.first_name')
     last_name = serializers.CharField(source='author.last_name')
-    # is_subscribed = serializers.SerializerMethodField()
-    recipes = SubscriptionRecipeSerializer(source='author.recipes',
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = SubscriptionRecipeSerializer(source='author.recipe_author',
                                            many=True,
                                            read_only=True)
     recipes_count = serializers.SerializerMethodField()
 
-    # def get_is_subscribed(self, obj):
-    #     if self.context.get('request').user.is_authenticated:
-    #         if Subscription.objects.filter(
-    #             author=obj.id, user=self.context.get('request').user.id
-    #         ).exists():
-    #             return True
-    #     return False
+    def get_is_subscribed(self, obj):
+        if not self.context.get('request').user.is_authenticated:
+            if Subscription.objects.filter(
+                author=obj.author.id,
+                user=self.context.get('request').user.id
+            ).exists():
+                return True
+            return False
+        return False
 
     def get_recipes_count(self, obj):
         '''Method for counting author's recipes.'''
@@ -124,5 +126,5 @@ class SubscriptionRetrieveSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = ['email', 'id', 'username', 'first_name',
                   'last_name', 'recipes', 'recipes_count',
-                    #'is_subscribed'
+                  'is_subscribed',
                   ]
