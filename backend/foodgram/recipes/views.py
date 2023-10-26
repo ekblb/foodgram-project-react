@@ -94,7 +94,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients_list = ['Cписок покупок:']
 
         for i in ingredients_annotate:
-            ingredients_list.append(f"- {i['ingredient__name']}"
+            ingredients_list.append(f"- {i['ingredient__name']} "
                                     f"({i['ingredient__measurement_unit']}) - "
                                     f"{i['sum_amount']}")
         for obj in ingredients_list:
@@ -107,7 +107,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return buf
 
-    @action(methods=['GET'], detail=False)
+    @action(methods=['GET'], detail=False,
+            permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
         '''Method for downloading user's shopping cart in pdf format.'''
         shopping_cart = ShoppingCart.objects.filter(user=request.user)

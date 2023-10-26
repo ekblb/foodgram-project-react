@@ -53,7 +53,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST
                         )
 
-    @action(methods=['GET'], detail=False)
+    @action(methods=['GET'], detail=False,
+            permission_classes=[permissions.IsAuthenticated])
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
         subscriptions = get_list_or_404(Subscription, user=request.user)
@@ -65,7 +66,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                                                     many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=['POST', 'DELETE'], detail=True)
+    @action(methods=['POST', 'DELETE'], detail=True,
+            permission_classes=[permissions.IsAuthenticated])
     def subscribe(self, request, pk):
         '''Method for creating and deleting user's subscription.'''
         author = get_object_or_404(CustomUser, id=pk)
