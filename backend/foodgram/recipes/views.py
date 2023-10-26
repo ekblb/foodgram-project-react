@@ -1,13 +1,7 @@
-import io
-
-from django.http import FileResponse
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,10 +13,7 @@ from .models import (FavoriteRecipe, Ingredient, Recipe,
                      ShoppingCart, Tag)
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeRetrieveSerializer, RecipeSerializer,
-                          TagSerializer, ShoppingCartSerializer,
-                          IngredientInRecipe)
-
-import logging
+                          TagSerializer, IngredientInRecipe)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -87,43 +78,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['GET'], detail=False)
     def download_shopping_cart(self, request):
-        log_str = ''
-        
         shopping_cart = ShoppingCart.objects.filter(user=request.user)
-        log_str = f'Shopping cart: {shopping_cart}'
         recipes = Recipe.objects.filter(id__in=shopping_cart.values('recipe'))
-        log_str += f'\nRecipes: {recipes}'
-        ingredients = IngredientInRecipe.objects.select_related('ingredient').filter(
-            id__in=recipes.values('ingredients')
-            )
-        log_str += f'\nIngredients: {ingredients.values()}'
-        log_str += f'\nIngredients query: {ingredients.query}'
-        
-        ingredient_list = log_str + '\nCписок покупок:'
-        for obj in ingredients:
-            ingredient_list += f'{obj.amount} {obj.ingredient.name}\n'
+        ingredients = IngredientInRecipe.objects.select_related(
+            'ingredient').filter(id__in=recipes.values('ingredients'))
+        ingredients_annotate = ingredients.values(
+            'ingredient__name', 'ingredient__measurement_unit').annotate(
+            sum_amount=Sum('amount'))
+        ingredient_list = 'Cписок покупок:'
 
-        # ingredient = Ingredient.objects.filter(
-        #     id__in=ingredients.values('ingredient')
-        #     ).annotate(sum_amount=Sum('ingredient_in_recipe__amount'))
-        # log_str += f'\nIngredient descr: {ingredient.values()}'
-        
-        # ingredient_name_measurement_unit = ingredient.values(
-        #     'name', 'measurement_unit')
-        # # .annotate(
-        # #     sum_amount=Sum('ingredient_in_recipe__amount'))
-        # log_str += f'\ningredient_name_measurement_unit: {ingredient_name_measurement_unit}'
-        # ingredient_list = log_str + '\nCписок покупок:'
-        # for num, i in enumerate(ingredient_name_measurement_unit):
-        #     ingredient_list += (
-        #         f"\n{i['name']} - "
-        #         # f"{i['sum_amount']} - "
-        #         f"{i['measurement_unit']}"
-        #     )
+        for num, i in enumerate(ingredients_annotate):
+            ingredient_list += (
+                f"\n{i['ingredient__name']}"
+                f"({i['ingredient__measurement_unit']}) - "
+                f"{i['sum_amount']}"
+            )
         response = HttpResponse(
             ingredient_list, 'Content-Type: application/pdf'
         )
-        response['Content-Disposition'] = f'attachment; filename="shopping_cart.pdf"'
+        response['Content-Disposition'] = 'attachment; filename="shopping_cart.pdf"'
         return response
 
     @action(methods=['POST', 'DELETE'], detail=True)
