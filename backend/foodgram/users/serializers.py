@@ -6,6 +6,8 @@ from .models import CustomUser, Subscription
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
+    '''Serializer for creating instance of CustomUser Model
+    (POST method).'''
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -15,6 +17,7 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        '''Method for creating new user.'''
         hash_password = make_password(validated_data.pop('password'))
         new_custom_user = CustomUser.objects.create(password=hash_password,
                                                     **validated_data
@@ -23,7 +26,8 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionRecipeSerializer(serializers.ModelSerializer):
-
+    '''Serializer for Recipe Model in CustomUserSubscribe serializer
+    (GET method).'''
     class Meta:
         model = Recipe
         fields = [
@@ -35,11 +39,14 @@ class SubscriptionRecipeSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSubscribeCreateSerializer(serializers.ModelSerializer):
+    '''Serializer for creating instance of Subscription Model
+    (POST method).'''
     is_subscribed = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
     recipes = SubscriptionRecipeSerializer(read_only=True)
 
     def get_is_subscribed(self, obj):
+        '''Method for defining user's subscriptions.'''
         if self.context.get('request').user.is_authenticated:
             if Subscription.objects.filter(
                 author=obj.id, user=self.context.get('request').user.id
@@ -48,6 +55,7 @@ class CustomUserSubscribeCreateSerializer(serializers.ModelSerializer):
         return False
 
     def get_recipes_count(self, obj):
+        '''Method for counting author's recipes.'''
         recipes_count = Recipe.objects.filter(author=obj.id).count()
         return recipes_count
 
@@ -63,9 +71,11 @@ class CustomUserSubscribeCreateSerializer(serializers.ModelSerializer):
 
 
 class CustomUserRetrieveSerializer(serializers.ModelSerializer):
+    '''Serializer for CustomUser Model (GET method).'''
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
+        '''Method for defining user's subscriptions.'''
         if self.context.get('request'):
             if Subscription.objects.filter(
                 author=obj.id, user=self.context.get('request').user.id
@@ -85,6 +95,7 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionRetrieveSerializer(serializers.ModelSerializer):
+    '''Serializer for Subscription Model (GET method).'''
     email = serializers.EmailField(source='author.email')
     id = serializers.IntegerField(source='author.id')
     username = serializers.EmailField(source='author.username')
@@ -105,6 +116,7 @@ class SubscriptionRetrieveSerializer(serializers.ModelSerializer):
     #     return False
 
     def get_recipes_count(self, obj):
+        '''Method for counting author's recipes.'''
         recipes_count = Recipe.objects.filter(author=obj.author).count()
         return recipes_count
 

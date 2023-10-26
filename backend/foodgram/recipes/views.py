@@ -4,24 +4,21 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
+from foodgram.permissions import AuthorOnly
 from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-
-from foodgram.permissions import AuthorOnly
-
 from .filters import RecipeFilters
-from .models import (FavoriteRecipe, Ingredient, Recipe,
-                     ShoppingCart, Tag)
-from .serializers import (IngredientSerializer, RecipeCreateSerializer,
-                          RecipeRetrieveSerializer, RecipeSerializer,
-                          TagSerializer, IngredientInRecipe)
+from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
+from .serializers import (IngredientInRecipe, IngredientSerializer,
+                          RecipeCreateSerializer, RecipeRetrieveSerializer,
+                          RecipeSerializer, TagSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -37,12 +34,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeRetrieveSerializer
 
     def get_permissions(self):
-        if self.action in ['update', 'delete']:
+        if self.request.method in ['PATCH', 'DELETE']:
             return (AuthorOnly(),)
         return super().get_permissions()
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
+        '''Method for creating and deleting favorite recipe.'''
         recipe = get_object_or_404(Recipe, id=pk)
 
         if request.method == 'POST':
@@ -85,9 +83,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
 
     def pdf_gen(self, ingredients_annotate):
+        '''Method for genereting pdf file which contant list of ingredients.'''
         buf = io.BytesIO()
         c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-        pdfmetrics.registerFont(TTFont('FreeSans', 'FreeSans.ttf'))
+        pdfmetrics.registerFont(TTFont('FreeSans', 'recipes/FreeSans.ttf'))
         textobj = c.beginText()
         textobj.setTextOrigin(inch, inch)
         textobj.setFont('FreeSans', 14)
@@ -95,7 +94,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients_list = ['Cписок покупок:']
 
         for i in ingredients_annotate:
-            ingredients_list.append(f"{i['ingredient__name']}"
+            ingredients_list.append(f"- {i['ingredient__name']}"
                                     f"({i['ingredient__measurement_unit']}) - "
                                     f"{i['sum_amount']}")
         for obj in ingredients_list:
@@ -110,6 +109,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['GET'], detail=False)
     def download_shopping_cart(self, request):
+        '''Method for downloading user's shopping cart in pdf format.'''
         shopping_cart = ShoppingCart.objects.filter(user=request.user)
         recipes = Recipe.objects.filter(id__in=shopping_cart.values('recipe'))
         ingredients = IngredientInRecipe.objects.select_related(
@@ -127,6 +127,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
+        '''Method for adding and deleting recipes to user's shopping cart.'''
         recipe = get_object_or_404(Recipe, id=pk)
 
         if request.method == 'POST':

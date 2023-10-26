@@ -12,11 +12,12 @@ from .serializers import (CustomUserCreateSerializer,
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
+    '''Class for viewing users.'''
     queryset = CustomUser.objects.all()
     permission_classes = (permissions.AllowAny, )
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.request.method == 'POST':
             return CustomUserCreateSerializer
         return CustomUserRetrieveSerializer
 
@@ -25,6 +26,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             permission_classes=[permissions.IsAuthenticated]
             )
     def me(self, request):
+        '''Method for getting current user.'''
         me = get_object_or_404(CustomUser, id=request.user.id)
         serializer = CustomUserRetrieveSerializer(me)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -34,6 +36,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             permission_classes=[permissions.IsAuthenticated]
             )
     def set_password(self, request):
+        '''Method for changing password.'''
         serializer = SetPasswordSerializer(data=request.data,
                                            context={'request': request}
                                            )
@@ -51,6 +54,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     @action(methods=['GET'], detail=False)
     def subscriptions(self, request):
+        '''Method for getting current user's subscriptions.'''
         user = request.user
         subscriptions = get_list_or_404(Subscription, user=user)
         serializer = SubscriptionRetrieveSerializer(subscriptions, many=True)
@@ -58,6 +62,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def subscribe(self, request, pk):
+        '''Method for creating and deleting user's subscription.'''
         author = get_object_or_404(CustomUser, id=pk)
 
         if request.method == 'POST':

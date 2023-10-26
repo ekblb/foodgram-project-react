@@ -4,6 +4,7 @@ from .models import Recipe
 
 
 class RecipeFilters(FilterSet):
+    '''Class for filtering favorite recipes and recipes in shopping cart.'''
     is_favorited = filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
         method='filter_is_in_shopping_cart'
