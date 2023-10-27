@@ -3,5 +3,5 @@ WORKDIR /app
 RUN pip install gunicorn==20.1.0
 COPY backend/foodgram/requirements.txt ./
 RUN pip3 install -r requirements.txt --no-cache-dir
-COPY backend/foodgram/ ./
+COPY  . .
 CMD ["gunicorn", "foodgram.wsgi", "--bind", "0:8000" ]
