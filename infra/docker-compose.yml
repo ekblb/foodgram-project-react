@@ -20,13 +20,14 @@ services:
       - static_volume:/backend_static
       - media_volume:/app/media
   frontend:
+    image: ekblb/kittygram_frontend
     build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
-    image: nginx:1.19.3
+    image: ekblb/foodgram_gateway
     ports:
       - "80:80"
     volumes:
