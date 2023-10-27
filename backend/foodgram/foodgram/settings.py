@@ -9,15 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# DEBUG = (os.getenv('DEBUG', 'False') == 'True')
-DEBUG = True
+DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
-ALLOWED_HOSTS = (os.getenv(
-    'ALLOWED_HOSTS', default='127.0.0.1, localhost')).split(', ')
-
-INTERNAL_IPS = (os.getenv(
-    'INTERNAL_IPS', default='127.0.0.1, localhost')).split(', ')
-
+ALLOWED_HOSTS = (os.getenv('ALLOWED_HOSTS', default='127.0.0.1, localhost')).split(', ')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -139,11 +133,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-MEDIA_ROOT = f'{BASE_DIR}/foodgram/media'
-MEDIA_URL = '/foodgram/media/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_URL = '/static_backend/'
+STATIC_URL = 'static_backend'
 STATIC_ROOT = BASE_DIR / 'static_backend'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
