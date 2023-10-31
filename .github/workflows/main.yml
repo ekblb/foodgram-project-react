@@ -82,7 +82,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "./infra/docker-compose.yml"
+          source: "docker-compose.yml"
           target: "foodgram"
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
@@ -92,18 +92,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd infra
-            sudo docker-compose down
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
-            touch .env
-            echo DB_NAME=${{ secrets.DATABASE_NAME }} >> .env
-            echo POSTGRES_USER=${{ secrets.POSTGRES_DATABASE_USERUSER }} >> .env
-            echo POSTGRES_PASSWORD=${{ secrets.DATABASE_PASSWORD }} >> .env
-            echo DB_HOST=${{ secrets.DATABASE_HOST }} >> .env
-            echo DB_PORT=${{ secrets.DATABASE_PORT }} >> .env
-            sudo docker-compose up -d
-
+            cd foodgram
+            sudo docker compose -f docker-compose.yml pull
+            sudo docker compose -f docker-compose.yml down
+            sudo docker compose -f docker-compose.yml up -d
+            sudo docker compose -f docker-compose.yml exec backend python manage.py migrate
+            sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic --no-input
+            sudo docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /backend_static/static/
 
   send_message:
     runs-on: ubuntu-latest
