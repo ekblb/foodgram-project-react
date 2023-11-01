@@ -79,6 +79,11 @@ jobs:
           envs: DATABASE_PASSWORD,DATABASE_NAME,DATABASE_USER,DATABASE_HOST,DATABASE_PORT
           script: |
             cd foodgram/infra
+            export DATABASE_PASSWORD="${DATABASE_PASSWORD}"
+            export DATABASE_NAME="${DATABASE_NAME}"
+            export DATABASE_USER="${DATABASE_USER}"
+            export DATABASE_HOST="${DATABASE_HOST}"
+            export DATABASE_PORT="${DATABASE_PORT}"
             sudo docker compose -f docker-compose.yml pull
             sudo docker compose -f docker-compose.yml down
             sudo docker compose -f docker-compose.yml up -d
