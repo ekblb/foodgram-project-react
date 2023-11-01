@@ -72,8 +72,6 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd foodgram/infra
-            sudo docker compose -f docker-compose.yml pull
-            sudo docker compose -f docker-compose.yml down
             sudo touch .env
             sudo echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             sudo echo DEBUG=False >> .env
@@ -84,6 +82,8 @@ jobs:
             sudo echo DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} >> .env
             sudo echo DATABASE_HOST=${{ secrets.DATABASE_HOST }} >> .env
             sudo echo DATABASE_PORT=${{ secrets.DATABASE_PORT }} >> .env
+            sudo docker compose -f docker-compose.yml pull
+            sudo docker compose -f docker-compose.yml down
             sudo docker compose -f docker-compose.yml up -d
 
   send_message:
