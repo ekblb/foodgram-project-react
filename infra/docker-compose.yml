@@ -14,7 +14,13 @@ services:
       - pg_data_production:/var/lib/postgresql/data
   backend:
     image: ekblb/foodgram_backend
-    env_file: .env
+    # env_file: .env
+    environment:
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
     volumes:
       - static_volume:/backend_static
       - media_volume:/app/media
