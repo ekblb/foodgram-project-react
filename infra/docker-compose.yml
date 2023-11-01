@@ -25,7 +25,7 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
-    image: ekblb/foodgram_gateway
+    image: nginx
     env_file: ./.env
     ports:
       - "8000:80"
