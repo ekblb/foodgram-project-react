@@ -72,19 +72,12 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd foodgram/infra
-            sudo touch .env
-            sudo echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-            sudo echo DEBUG=False >> .env
-            sudo echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
-            sudo echo DATABASE_ENGINE=${{ secrets.DATABASE_ENGINE }} >> .env
-            sudo echo DATABASE_NAME=${{ secrets.DATABASE_NAME }} >> .env
-            sudo echo DATABASE_USER=${{ secrets.DATABASE_USER }} >> .env
-            sudo echo DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} >> .env
-            sudo echo DATABASE_HOST=${{ secrets.DATABASE_HOST }} >> .env
-            sudo echo DATABASE_PORT=${{ secrets.DATABASE_PORT }} >> .env
             sudo docker compose -f docker-compose.yml pull
             sudo docker compose -f docker-compose.yml down
             sudo docker compose -f docker-compose.yml up -d
+            sudo docker compose -f docker-compose.yml exec backend python manage.py migrate
+            sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic --no-input
+            sudo docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /backend_static/static/
 
   send_message:
     runs-on: ubuntu-latest

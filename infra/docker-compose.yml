@@ -8,12 +8,12 @@ volumes:
 services:
   db:
     image: postgres:13.10
-    env_file: ./.env
+    env_file: .env
     volumes:
       - pg_data_production:/var/lib/postgresql/data
   backend:
     image: ekblb/foodgram_backend
-    env_file: ./.env
+    env_file: .env
     volumes:
       - static_volume:/backend_static
       - media_volume:/app/media
@@ -21,12 +21,12 @@ services:
       - db
   frontend:
     image: ekblb/foodgram_frontend
-    env_file: ./.env
+    env_file: .env
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
     image: nginx
-    env_file: ./.env
+    env_file: .env
     ports:
       - "8000:80"
     volumes:
