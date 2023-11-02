@@ -20,8 +20,8 @@ services:
     image: ekblb/foodgram_backend
     env_file: .env
     volumes:
-      - static_volume:/app/backend_static
-      - media_volume:/app/backend_media
+      - static_volume:/backend_static
+      - media_volume:/backend_media
     depends_on: 
       - db
   frontend:
