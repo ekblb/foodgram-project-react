@@ -1,7 +1,7 @@
 version: '3.3'
 
 volumes:
-  pg_data_production:
+  pg_data:
   static_volume:
   media_volume:
   result_build:
@@ -15,7 +15,7 @@ services:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_DB=${DATABASE_NAME}
     volumes:
-      - pg_data_production:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
   backend:
     image: ekblb/foodgram_backend
     env_file: .env
