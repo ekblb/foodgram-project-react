@@ -10,7 +10,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, status, viewsets, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -38,7 +38,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return (AuthorOnly(),)
         return super().get_permissions()
 
-    @action(methods=['POST', 'DELETE'], detail=True)
+    @action(methods=['POST', 'DELETE'], detail=True,
+            pagination_class=[pagination.PageNumberPagination])
     def favorite(self, request, pk):
         '''Method for creating and deleting favorite recipe.'''
         recipe = get_object_or_404(Recipe, id=pk)
