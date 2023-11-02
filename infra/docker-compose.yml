@@ -25,7 +25,6 @@ services:
     depends_on: 
       - db
   frontend:
-    build:
     image: ekblb/foodgram_frontend
     env_file: .env
     volumes:
