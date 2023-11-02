@@ -1,6 +1,6 @@
 from django.shortcuts import get_list_or_404, get_object_or_404
 from djoser.serializers import SetPasswordSerializer
-from rest_framework import permissions, status, viewsets
+from rest_framework import pagination, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -54,7 +54,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                         )
 
     @action(methods=['GET'], detail=False,
-            permission_classes=[permissions.IsAuthenticated])
+            permission_classes=[permissions.IsAuthenticated],
+            pagination_class=[pagination.PageNumberPagination])
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
         subscriptions = get_list_or_404(Subscription, user=request.user)
