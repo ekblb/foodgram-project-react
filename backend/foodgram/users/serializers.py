@@ -108,13 +108,12 @@ class SubscriptionRetrieveSerializer(serializers.ModelSerializer):
     recipes_count = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
-        if not self.context.get('request').user.is_authenticated:
+        '''Method for defining user's subscriptions.'''
+        if self.context.get('request'):
             if Subscription.objects.filter(
-                author=obj.author.id,
-                user=self.context.get('request').user.id
+                author=obj.id, user=self.context.get('request').user.id
             ).exists():
                 return True
-            return False
         return False
 
     def get_recipes_count(self, obj):
