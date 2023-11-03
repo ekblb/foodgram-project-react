@@ -44,10 +44,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, id=pk)
 
         if request.method == 'POST':
-            if request.user.id == recipe.author.id:
-                return Response(
-                    {'errors': 'Невозможно добавить свой рецепт в избранное.'},
-                    status=status.HTTP_400_BAD_REQUEST)
+            # if request.user.id == recipe.author.id:
+            #     return Response(
+            #         {'errors': 'Невозможно добавить свой рецепт в избранное.'},
+            #         status=status.HTTP_400_BAD_REQUEST)
             serializer = RecipeSerializer(recipe,
                                           data=request.data,
                                           context={'request': request},

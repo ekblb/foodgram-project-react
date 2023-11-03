@@ -58,7 +58,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
         subscriptions = get_list_or_404(Subscription, user=request.user)
-        pagination_class = (pagination.PageNumberPagination, )
         # subscriptions = Subscription.objects.filter(
         #     user=request.user).select_related('author')
 
