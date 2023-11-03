@@ -54,18 +54,19 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                         )
 
     @action(methods=['GET'], detail=False,
-            permission_classes=[permissions.IsAuthenticated],
-            pagination_class=[pagination.PageNumberPagination])
+            permission_classes=[permissions.IsAuthenticated])
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
         subscriptions = get_list_or_404(Subscription, user=request.user)
+        paginator = pagination.PageNumberPagination()
+        page = paginator.paginate_queryset(subscriptions, request)
         # subscriptions = Subscription.objects.filter(
         #     user=request.user).select_related('author')
 
-        serializer = SubscriptionRetrieveSerializer(subscriptions,
+        serializer = SubscriptionRetrieveSerializer(page, subscriptions,
                                                     context={'request': request},
                                                     many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(paginator.get_paginated_response(serializer.data), status=status.HTTP_200_OK)
 
     @action(methods=['POST', 'DELETE'], detail=True,
             permission_classes=[permissions.IsAuthenticated])
