@@ -22,6 +22,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return CustomUserCreateSerializer
         return CustomUserRetrieveSerializer
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return permissions.AllowAny()
+
     @action(methods=['GET'],
             detail=False,
             permission_classes=[permissions.IsAuthenticated]
@@ -34,7 +38,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'],
             detail=False,
-            permission_classes=[permissions.IsAuthenticated]
+            # permission_classes=[permissions.IsAuthenticated]
             )
     def set_password(self, request):
         '''Method for changing password.'''
