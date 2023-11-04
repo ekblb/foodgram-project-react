@@ -63,13 +63,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
         subscriptions = Subscription.objects.filter(user=request.user)
-        if subscriptions:
-            subscriptions_page = self.paginate_queryset(subscriptions)
-            serializer = SubscriptionRetrieveSerializer(subscriptions_page,
+        subscriptions_page = self.paginate_queryset(subscriptions)
+        serializer = SubscriptionRetrieveSerializer(subscriptions_page,
                                                         context={'request': request},
                                                         many=True)
-            return self.get_paginated_response(serializer.data)
-        return Response(Subscription.objects.none(), status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
+        
 
     @action(methods=['POST', 'DELETE'], detail=True,
             permission_classes=[permissions.IsAuthenticated])
