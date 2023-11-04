@@ -60,11 +60,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = get_list_or_404(Subscription, user=request.user)
         paginator = pagination.PageNumberPagination()
         page = paginator.paginate_queryset(subscriptions, request)
-        pagination_class = (pagination.PageNumberPagination,)
         # subscriptions = Subscription.objects.filter(
         #     user=request.user).select_related('author')
 
-        serializer = SubscriptionRetrieveSerializer(page, subscriptions,
+        serializer = SubscriptionRetrieveSerializer(page,
                                                     context={'request': request},
                                                     many=True)
         return Response(paginator.get_paginated_response(serializer.data), status=status.HTTP_200_OK)
