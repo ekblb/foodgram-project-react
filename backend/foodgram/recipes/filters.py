@@ -20,19 +20,19 @@ class RecipeFilters(FilterSet):
         fields = ['is_favorited', 'is_in_shopping_cart', 'tags']
 
     def filter_is_favorited(self, queryset, name, value):
-        if not self.request.user.is_authenticated:
-            return Recipe.objects.none()
-        favorite_recipes = FavoriteRecipe.objects.filter(
-            user=self.request.user)
-        favorite_recipes_id = favorite_recipes.values('recipe')
-        queryset.filter(id__in=favorite_recipes_id)
-        return queryset
+        if value and self.request.user.is_authenticated:
+            favorite_recipes = FavoriteRecipe.objects.filter(
+                user=self.request.user)
+            favorite_recipes_id = favorite_recipes.values('recipe')
+            queryset.filter(id__in=favorite_recipes_id)
+            return queryset
+        return Recipe.objects.none()
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        if not self.request.user.is_authenticated:
-            return Recipe.objects.none()
-        shopping_cart_recipes = ShoppingCart.objects.filter(
-            user=self.request.user)
-        shopping_cart_recipes_id = shopping_cart_recipes.values('recipe')
-        queryset.filter(id__in=shopping_cart_recipes_id)
-        return queryset
+        if value and self.request.user.is_authenticated:
+            shopping_cart_recipes = ShoppingCart.objects.filter(
+                user=self.request.user)
+            shopping_cart_recipes_id = shopping_cart_recipes.values('recipe')
+            queryset.filter(id__in=shopping_cart_recipes_id)
+            return queryset
+        return Recipe.objects.none()
