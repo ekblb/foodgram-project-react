@@ -62,7 +62,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             pagination_class=pagination.PageNumberPagination)
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
-        subscriptions = get_object_or_404(Subscription, user=request.user)
+        subscriptions = get_list_or_404(Subscription, user=request.user)
         subscriptions_page = self.paginate_queryset(subscriptions)
         serializer = SubscriptionRetrieveSerializer(subscriptions_page,
                                                     context={'request': request},
