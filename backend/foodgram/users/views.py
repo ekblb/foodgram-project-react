@@ -22,9 +22,9 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return CustomUserCreateSerializer
         return CustomUserRetrieveSerializer
 
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return permissions.AllowAny()
+    # def get_permissions(self):
+    #     if self.request.method == 'GET':
+    #         return permissions.AllowAny()
 
     @action(methods=['GET'],
             detail=False,
