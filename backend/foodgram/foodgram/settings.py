@@ -99,9 +99,9 @@ DJOSER = {
         'user': 'users.serializers.CustomUserRetrieveSerializer',
         'user_create': 'users.serializers.CustomUserRetrieveSerializer',
     },
-    # 'HIDE_USERS': {
-    #     False,
-    # }
+    'HIDE_USERS': {
+        False,
+    }
 }
 
 REST_FRAMEWORK = {
