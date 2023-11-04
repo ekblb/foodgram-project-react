@@ -69,7 +69,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                                                         context={'request': request},
                                                         many=True)
             return self.get_paginated_response(serializer.data)
-        return Response([], status=status.HTTP_200_OK)
+        return Response(Subscription.objects.none(), status=status.HTTP_200_OK)
 
     @action(methods=['POST', 'DELETE'], detail=True,
             permission_classes=[permissions.IsAuthenticated])
