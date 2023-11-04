@@ -84,7 +84,7 @@ class Recipe(models.Model):
         )
     image = models.ImageField(
         verbose_name='Картинка',
-        upload_to=user_directory_path,
+        # upload_to=user_directory_path,
         )
     text = models.CharField(
         verbose_name='Описание',
