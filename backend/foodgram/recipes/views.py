@@ -25,7 +25,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     '''Class for viewing recipes.'''
     queryset = Recipe.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipeFilters
 
     def get_serializer_class(self):
