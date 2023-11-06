@@ -103,7 +103,7 @@ DJOSER = {
         False,
     },
     'PERMISSIONS': {
-        'user': ['djoser.permissions.AllowAny'],
+        'user': 'rest_framework.permissions.AllowAny',
     }
 }
 
