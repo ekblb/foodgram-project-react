@@ -10,6 +10,7 @@ class IngredientResource(resources.ModelResource):
     class Meta:
         model = Ingredient
 
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'author', 'author_id', 'favorite_recipes']
@@ -39,7 +40,7 @@ class IngredientInRecipeAdmin(admin.ModelAdmin):
 @admin.register(FavoriteRecipe)
 class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = ['id', 'recipe', 'user', ]
-    list_filter = ['recipe', 'user',  ]
+    list_filter = ['recipe', 'user', ]
 
 
 @admin.register(ShoppingCart)

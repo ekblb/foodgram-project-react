@@ -14,7 +14,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .filters import RecipeFilters, IngredientFilter
+from .filters import IngredientFilter, RecipeFilters
 from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
 from .serializers import (IngredientInRecipe, IngredientSerializer,
                           RecipeCreateSerializer, RecipeRetrieveSerializer,
@@ -46,7 +46,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             # if request.user.id == recipe.author.id:
             #     return Response(
-            #         {'errors': 'Невозможно добавить свой рецепт в избранное.'},
+            #         {
+            # 'errors': 'Невозможно добавить свой рецепт в избранное.'},
             #         status=status.HTTP_400_BAD_REQUEST)
             serializer = RecipeSerializer(recipe,
                                           data=request.data,

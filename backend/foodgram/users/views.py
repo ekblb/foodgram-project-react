@@ -1,4 +1,4 @@
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.shortcuts import get_object_or_404
 from djoser.serializers import SetPasswordSerializer
 from rest_framework import pagination, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -8,8 +8,7 @@ from .models import CustomUser, Subscription
 from .serializers import (CustomUserCreateSerializer,
                           CustomUserRetrieveSerializer,
                           CustomUserSubscribeCreateSerializer,
-                          SubscriptionRetrieveSerializer,
-                          )
+                          SubscriptionRetrieveSerializer)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -40,7 +39,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                                            context={'request': request}
                                            )
         if serializer.is_valid():
-            if serializer.data["new_password"] == serializer.data["current_password"]:
+            if (serializer.data["new_password"] == serializer.data["current_password"]):
                 return Response({'errors': 'Пароли совпадают.'},
                                 status=status.HTTP_400_BAD_REQUEST
                                 )
@@ -58,9 +57,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         '''Method for getting current user's subscriptions.'''
         subscriptions = Subscription.objects.filter(user=request.user)
         subscriptions_page = self.paginate_queryset(subscriptions)
-        serializer = SubscriptionRetrieveSerializer(subscriptions_page,
-                                                    context={'request': request},
-                                                    many=True)
+        serializer = SubscriptionRetrieveSerializer(
+            subscriptions_page, context={'request': request}, many=True)
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['POST', 'DELETE'], detail=True,

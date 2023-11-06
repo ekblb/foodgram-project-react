@@ -1,6 +1,6 @@
 import base64
-import uuid
 import imghdr
+import uuid
 
 import six
 from django.core.files.base import ContentFile
