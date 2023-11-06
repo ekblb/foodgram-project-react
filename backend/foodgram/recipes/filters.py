@@ -4,13 +4,12 @@ from django_filters.rest_framework import (FilterSet, filters,
 from .models import Recipe, FavoriteRecipe, ShoppingCart, Tag, Ingredient
 
 
-class IngredientFilter(FilterSet):
-    name = filters.CharFilter(field_name='name',
-                              lookup_expr='istartswith')
+class IngredientFilter(filters.SearchFilter):
+    search_param = 'name'
 
     class Meta:
         model = Ingredient
-        fields = ['name']
+        fields = ('name',)
 
 
 class RecipeFilters(FilterSet):

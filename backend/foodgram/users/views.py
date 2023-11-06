@@ -61,9 +61,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer = SubscriptionRetrieveSerializer(subscriptions_page,
                                                     context={'request': request},
                                                     many=True)
-        if not subscriptions:
-            return Response(serializer.data,
-                            status=status.HTTP_200_OK)
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['POST', 'DELETE'], detail=True,
