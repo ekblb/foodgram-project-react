@@ -10,11 +10,13 @@ class IngredientResource(resources.ModelResource):
     class Meta:
         model = Ingredient
 
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'author', 'author_id', ]
+    list_display = ['id', 'name', 'author', 'author_id', 'favorite_recipes']
     list_filter = ['author', 'name', 'tags', ]
+
+    def favorite_recipes(self, obj: Recipe):
+        return obj.favorites.count()
 
 
 @admin.register(Ingredient)
