@@ -2,10 +2,6 @@ from django.db import models
 from users.models import CustomUser
 
 
-# def user_directory_path(instance, filename):
-#     return 'user_{0}/{1}'.format(instance.author.id, filename)
-
-
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название',

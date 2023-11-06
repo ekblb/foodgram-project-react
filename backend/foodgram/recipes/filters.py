@@ -1,10 +1,11 @@
 from django_filters.rest_framework import (FilterSet, filters,
                                            ModelMultipleChoiceFilter)
+from rest_framework.filters import SearchFilter
 
 from .models import Recipe, FavoriteRecipe, ShoppingCart, Tag, Ingredient
 
 
-class IngredientFilter(filters.SearchFilter):
+class IngredientFilter(SearchFilter):
     search_param = 'name'
 
     class Meta:
