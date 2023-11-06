@@ -38,12 +38,14 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer = SetPasswordSerializer(data=request.data,
                                            context={'request': request}
                                            )
+        new_password = serializer.data["new_password"]
+        current_password = serializer.data["current_password"]
         if serializer.is_valid():
-            if (serializer.data["new_password"] == serializer.data["current_password"]):
+            if new_password == current_password:
                 return Response({'errors': 'Пароли совпадают.'},
                                 status=status.HTTP_400_BAD_REQUEST
                                 )
-            self.request.user.set_password(serializer.data["new_password"])
+            self.request.user.set_password(new_password)
             self.request.user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors,
@@ -71,12 +73,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             if request.user.id == author.id:
                 return Response(
                     {'errors': 'Подписка на самого себя невозможна.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                    )
+                    status=status.HTTP_400_BAD_REQUEST)
             serializer = CustomUserSubscribeCreateSerializer(
                 author,
-                data=request.data, context={'request': request}
-                )
+                data=request.data, context={'request': request})
             if serializer.is_valid():
                 if not Subscription.objects.filter(author=author,
                                                    user=request.user).exists():
@@ -88,11 +88,9 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                                     )
                 return Response(
                     {'errors': 'Вы уже подписаны на этого пользователя.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                    )
+                    status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST
-                            )
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if request.method == 'DELETE':
             subscription_delete = Subscription.objects.filter(
@@ -104,5 +102,4 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {'errors': 'У вас нет подписки на этого пользователя.'},
-                status=status.HTTP_400_BAD_REQUEST
-                )
+                status=status.HTTP_400_BAD_REQUEST)

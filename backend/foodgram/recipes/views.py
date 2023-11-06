@@ -65,8 +65,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                     )
                 return Response(
                     {'errors': 'Рецепт уже добавлен в список избранных.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                    )
+                    status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST
                             )
@@ -80,8 +79,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {'errors': 'Такого рецепта нет в списке избранных.'},
-                status=status.HTTP_400_BAD_REQUEST
-                )
+                status=status.HTTP_400_BAD_REQUEST)
 
     def pdf_gen(self, ingredients_annotate):
         '''Method for genereting pdf file which contant list of ingredients.'''

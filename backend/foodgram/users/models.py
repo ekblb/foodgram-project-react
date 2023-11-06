@@ -7,25 +7,20 @@ class CustomUser(AbstractUser):
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
         max_length=254,
-        unique=True,
-        )
+        unique=True,)
     username = models.CharField(
         verbose_name='Username',
         max_length=150,
-        unique=True,
-        )
+        unique=True,)
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=150,
-        )
+        max_length=150,)
     last_name = models.CharField(
         verbose_name='Фамилия',
-        max_length=150,
-        )
+        max_length=150,)
     password = models.CharField(
         verbose_name='Пароль',
-        max_length=150,
-        )
+        max_length=150,)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', ]
@@ -40,14 +35,12 @@ class Subscription(models.Model):
         CustomUser,
         verbose_name='Автор рецепта',
         related_name='subscription_author',
-        on_delete=models.CASCADE,
-        )
+        on_delete=models.CASCADE,)
     user = models.ForeignKey(
         CustomUser,
         verbose_name='Подписчик',
         related_name='subscription_user',
-        on_delete=models.CASCADE,
-        )
+        on_delete=models.CASCADE,)
 
     class Meta:
         verbose_name = 'Подписка'

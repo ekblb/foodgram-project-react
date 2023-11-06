@@ -60,8 +60,7 @@ class IngredientInRecipeRetrieveSerializer(serializers.ModelSerializer):
                                   )
     name = serializers.CharField(source='ingredient.name')
     measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit',
-        )
+        source='ingredient.measurement_unit',)
 
     class Meta:
         model = IngredientInRecipe
@@ -91,11 +90,9 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = [
-           'id', 'tags', 'author', 'ingredients',
-           'name', 'image', 'text', 'cooking_time',
-           'is_in_shopping_cart',  'is_favorited',
-        ]
+        fields = ['id', 'tags', 'author', 'ingredients',
+                  'name', 'image', 'text', 'cooking_time',
+                  'is_in_shopping_cart', 'is_favorited', ]
 
     def get_is_favorited(self, obj):
         '''Method for defining favorite recipes.'''
@@ -129,10 +126,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = [
-           'ingredients', 'tags', 'name', 'image', 'text',
-           'cooking_time',
-        ]
+        fields = ['ingredients', 'tags', 'name',
+                  'image', 'text', 'cooking_time', ]
 
     def ingredients_index(self, validated_data):
         '''Method for getting ingredients indexes from getting recipes.'''
@@ -143,8 +138,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 id=ingredient['ingredient'])
             ingredient_in_recipe = IngredientInRecipe.objects.create(
                 ingredient=ingredient_object,
-                amount=ingredient['amount']
-                )
+                amount=ingredient['amount'])
             ingredients_index.append(ingredient_in_recipe.id)
         return ingredients_index
 
@@ -185,9 +179,5 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = [
-           'id', 'name', 'image', 'cooking_time',
-        ]
-        read_only_fields = [
-            'name', 'cooking_time'
-        ]
+        fields = ['id', 'name', 'image', 'cooking_time', ]
+        read_only_fields = ['name', 'cooking_time']

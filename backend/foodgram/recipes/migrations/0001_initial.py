@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FavoriteRecipe',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True,
+                                           serialize=False, verbose_name='ID')),
             ],
             options={
                 'verbose_name': 'Избранный рецепт',
@@ -25,9 +26,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Ingredient',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200, verbose_name='Название')),
-                ('measurement_unit', models.CharField(max_length=200, verbose_name='Измеряемая единица')),
+                ('id', models.BigAutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID')),
+                ('name', models.CharField(max_length=200,
+                                          verbose_name='Название')),
+                ('measurement_unit', models.CharField(
+                    max_length=200,
+                    verbose_name='Измеряемая единица')),
             ],
             options={
                 'verbose_name': 'Ингредиент',
@@ -38,8 +44,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='IngredientInRecipe',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.PositiveIntegerField(verbose_name='Количество')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True,
+                                           serialize=False, verbose_name='ID')),
+                ('amount', models.PositiveIntegerField(
+                    verbose_name='Количество')),
             ],
             options={
                 'verbose_name': 'Ингредиент в рецепте',
