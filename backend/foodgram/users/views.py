@@ -22,10 +22,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return CustomUserCreateSerializer
         return CustomUserRetrieveSerializer
 
-    # def get_permissions(self):
-    #     if self.request.method == 'GET':
-    #         return permissions.AllowAny()
-
     @action(methods=['GET'],
             detail=False,
             permission_classes=[permissions.IsAuthenticated]
@@ -37,9 +33,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=['POST'],
-            detail=False,
-            # permission_classes=[permissions.IsAuthenticated]
-            )
+            detail=False,)
     def set_password(self, request):
         '''Method for changing password.'''
         serializer = SetPasswordSerializer(data=request.data,
@@ -65,10 +59,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = Subscription.objects.filter(user=request.user)
         subscriptions_page = self.paginate_queryset(subscriptions)
         serializer = SubscriptionRetrieveSerializer(subscriptions_page,
-                                                        context={'request': request},
-                                                        many=True)
+                                                    context={'request': request},
+                                                    many=True)
+        if not subscriptions:
+            return Response('Вы ни на кого не подписаны.',
+                            status=status.HTTP_200_OK)
         return self.get_paginated_response(serializer.data)
-        
 
     @action(methods=['POST', 'DELETE'], detail=True,
             permission_classes=[permissions.IsAuthenticated])
