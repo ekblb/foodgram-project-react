@@ -101,6 +101,9 @@ DJOSER = {
     },
     'HIDE_USERS': {
         False,
+    },
+    'PERMISSIONS': {
+        'user': ['djoser.permissions.AllowAny'],
     }
 }
 
