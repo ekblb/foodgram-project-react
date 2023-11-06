@@ -10,7 +10,7 @@ class IngredientFilter(SearchFilter):
 
     class Meta:
         model = Ingredient
-        fields = ('name',)
+        fields = ('name', )
 
 
 class RecipeFilters(FilterSet):
@@ -26,10 +26,9 @@ class RecipeFilters(FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['is_favorited', 'is_in_shopping_cart', 'tags']
+        fields = ['is_favorited', 'is_in_shopping_cart', 'tags', 'author', ]
 
     def filter_is_favorited(self, queryset, name, value):
-        # if self.request.user.is_authenticated:
         if value:
             favorite_recipes = FavoriteRecipe.objects.filter(
                 user=self.request.user)
@@ -39,7 +38,6 @@ class RecipeFilters(FilterSet):
         return filter_queryset.none()
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        # if self.request.user.is_authenticated:
         if value:
             shopping_cart_recipes = ShoppingCart.objects.filter(
                 user=self.request.user)
