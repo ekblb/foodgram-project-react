@@ -15,8 +15,7 @@ from .serializers import (CustomUserCreateSerializer,
 class CustomUserViewSet(viewsets.ModelViewSet):
     '''Class for viewing users.'''
     queryset = CustomUser.objects.all()
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
-    # permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny, )
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
