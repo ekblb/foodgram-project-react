@@ -62,7 +62,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                                                     context={'request': request},
                                                     many=True)
         if not subscriptions:
-            return Response('Вы ни на кого не подписаны.',
+            return Response(serializer.data,
                             status=status.HTTP_200_OK)
         return self.get_paginated_response(serializer.data)
 
