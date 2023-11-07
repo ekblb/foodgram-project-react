@@ -28,8 +28,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'debug_toolbar',
     'djoser',
-    'django_filters',
-]
+    'django_filters']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -39,8 +38,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-]
+    'debug_toolbar.middleware.DebugToolbarMiddleware']
 
 ROOT_URLCONF = 'foodgram.urls'
 

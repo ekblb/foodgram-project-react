@@ -25,6 +25,8 @@
 
 Документация к API доступна по адресу: <http://localhost/api/docs/redoc.html>
 
+Проект доступен по адресу: <http://foodgram-ekblb.sytes.net/>
+
 
 ## Автор
 

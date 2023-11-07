@@ -14,7 +14,7 @@ class IngredientResource(resources.ModelResource):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'author', 'author_id', 'favorite_recipes']
-    list_filter = ['author', 'name', 'tags', ]
+    list_filter = ['author', 'name', 'tags']
 
     def favorite_recipes(self, obj: Recipe):
         return obj.favorite_recipe.count()
@@ -23,13 +23,13 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(Ingredient)
 class IngredientAdmin(ImportExportModelAdmin):
     resource_class = IngredientResource
-    list_display = ['id', 'name', 'measurement_unit', ]
-    list_filter = ['name', ]
+    list_display = ['id', 'name', 'measurement_unit']
+    list_filter = ['name']
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'color', 'slug', ]
+    list_display = ['id', 'name', 'color', 'slug']
 
 
 @admin.register(IngredientInRecipe)
@@ -39,11 +39,11 @@ class IngredientInRecipeAdmin(admin.ModelAdmin):
 
 @admin.register(FavoriteRecipe)
 class FavoriteRecipeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'recipe', 'user', ]
-    list_filter = ['recipe', 'user', ]
+    list_display = ['id', 'recipe', 'user']
+    list_filter = ['recipe', 'user']
 
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
-    list_display = ['id', 'recipe', 'user', ]
-    list_filter = ['recipe', 'user', ]
+    list_display = ['id', 'recipe', 'user']
+    list_filter = ['recipe', 'user']
