@@ -13,7 +13,7 @@ from rest_framework import pagination, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from backend.foodgram.recipes.permissions import IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnly
 
 from .filters import IngredientFilter, RecipeFilters
 from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
