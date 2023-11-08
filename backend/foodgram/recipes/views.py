@@ -57,29 +57,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
             #         status=status.HTTP_400_BAD_REQUEST)
             serializer = RecipeSerializer(recipe,
                                           data=request.data,
-                                          context={'request': request},
-                                          )
+                                          context={'request': request})
             if serializer.is_valid():
                 if not FavoriteRecipe.objects.filter(recipe=recipe,
                                                      user=request.user
                                                      ).exists():
                     FavoriteRecipe.objects.create(recipe=recipe,
-                                                  user=request.user
-                                                  )
+                                                  user=request.user)
                     return Response(serializer.data,
-                                    status=status.HTTP_201_CREATED
-                                    )
+                                    status=status.HTTP_201_CREATED)
                 return Response(
                     {'errors': 'Рецепт уже добавлен в список избранных.'},
                     status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST
-                            )
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if request.method == 'DELETE':
             recipe_delete = FavoriteRecipe.objects.filter(recipe=recipe,
-                                                          user=request.user
-                                                          )
+                                                          user=request.user)
             if recipe_delete.exists():
                 recipe_delete.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -149,8 +144,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             #         status=status.HTTP_400_BAD_REQUEST)
             serializer = RecipeSerializer(recipe,
                                           data=request.data,
-                                          context={'request': request},
-                                          )
+                                          context={'request': request})
             if serializer.is_valid():
                 if not ShoppingCart.objects.filter(recipe=recipe,
                                                    user=request.user
@@ -163,8 +157,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {'errors': 'Рецепт уже добавлен в список покупок.'},
                     status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST
-                            )
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if request.method == 'DELETE':
             recipe_delete = ShoppingCart.objects.filter(recipe=recipe,
@@ -173,8 +166,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe_delete.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response({'errors': 'Такого рецепта нет в списке покупок.'},
-                            status=status.HTTP_400_BAD_REQUEST
-                            )
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -194,4 +186,4 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (IngredientFilter,)
-    search_fields = ('^name')
+    search_fields = ('^name',)

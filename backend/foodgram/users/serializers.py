@@ -22,10 +22,10 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', ]
-        read_only_fields = ['email', 'username', 'first_name', 'last_name',
-                            'is_subscribed', ]
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed')
+        read_only_fields = ('email', 'username', 'first_name', 'last_name',
+                            'is_subscribed')
 
 
 class SubscriptionRecipeSerializer(serializers.ModelSerializer):
@@ -35,8 +35,8 @@ class SubscriptionRecipeSerializer(serializers.ModelSerializer):
     '''
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'image', 'cooking_time', ]
-        read_only_fields = ['id', 'name', 'image', 'cooking_time', ]
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
@@ -49,13 +49,12 @@ class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
         user = data.get('user')
         if user == author:
             raise serializers.ValidationError(
-                {'errors': 'Подписка на самого себя невозможна.'}
-            )
+                {'errors': 'Подписка на самого себя невозможна.'})
         return data
 
     class Meta:
         model = Subscription
-        fields = ['author', 'user', ]
+        fields = ('author', 'user')
 
 
 class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
@@ -87,4 +86,4 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
 
     class Meta(CustomUserRetrieveSerializer.Meta):
         model = CustomUser
-        fields = ['recipes', 'recipes_count', ]
+        fields = ('recipes', 'recipes_count')

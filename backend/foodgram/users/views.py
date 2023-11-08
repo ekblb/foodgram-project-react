@@ -15,7 +15,7 @@ class CustomUserViewSet(UserViewSet):
     '''
     queryset = CustomUser.objects.all()
     permission_classes = (permissions.AllowAny, )
-    pagination_class = pagination.LimitOffsetPagination
+    # pagination_class = pagination.LimitOffsetPagination
 
     @action(methods=['GET'], detail=False,
             permission_classes=[permissions.IsAuthenticated],
@@ -49,8 +49,7 @@ class CustomUserViewSet(UserViewSet):
         if request.method == 'DELETE':
             subscription_delete = Subscription.objects.filter(
                 author=author,
-                user=request.user
-            )
+                user=request.user)
 
             if subscription_delete.delete():
                 return Response(status=status.HTTP_204_NO_CONTENT)
