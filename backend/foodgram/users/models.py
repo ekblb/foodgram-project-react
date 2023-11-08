@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
         verbose_name='Username',
         max_length=MAX_LENGHT,
         unique=True,
-        validators=UnicodeUsernameValidator())
+        validators=[UnicodeUsernameValidator()])
     first_name = models.CharField(
         verbose_name='Имя',
         max_length=MAX_LENGHT)
