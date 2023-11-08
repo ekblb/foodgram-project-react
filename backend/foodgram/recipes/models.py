@@ -1,20 +1,22 @@
 from django.db import models
 from users.models import CustomUser
 
+from .constants import MAX_LENGHT, MAX_LENGHT_COLOR
+
 
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название',
         unique=True,
-        max_length=200, )
+        max_length=MAX_LENGHT, )
     color = models.CharField(
         verbose_name='Цвет в HEX',
         unique=True,
-        max_length=7,)
+        max_length=MAX_LENGHT_COLOR, )
     slug = models.SlugField(
         verbose_name='Уникальный слаг',
         unique=True,
-        max_length=200,)
+        max_length=MAX_LENGHT,)
 
     class Meta:
         verbose_name = 'Тег'
@@ -28,10 +30,10 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название',
-        max_length=200,)
+        max_length=MAX_LENGHT,)
     measurement_unit = models.CharField(
         verbose_name='Измеряемая единица',
-        max_length=200,)
+        max_length=MAX_LENGHT,)
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -68,12 +70,12 @@ class Recipe(models.Model):
         on_delete=models.CASCADE,)
     name = models.CharField(
         verbose_name='Название',
-        max_length=200,)
+        max_length=MAX_LENGHT,)
     image = models.ImageField(
         verbose_name='Картинка',)
     text = models.CharField(
         verbose_name='Описание',
-        max_length=200,)
+        max_length=MAX_LENGHT,)
     ingredients = models.ManyToManyField(
         IngredientInRecipe,
         verbose_name='Список ингредиентов',
@@ -112,6 +114,7 @@ class FavoriteRecipe(models.Model):
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+        ordering = ['id']
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],
@@ -138,6 +141,7 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'
+        ordering = ['id']
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],

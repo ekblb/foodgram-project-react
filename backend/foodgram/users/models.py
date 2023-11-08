@@ -1,26 +1,32 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.db.models import Q, F
+
+
+from .constants import MAX_LENGHT, MAX_LENGHT_EMAIL
 
 
 class CustomUser(AbstractUser):
 
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
-        max_length=254,
+        max_length=MAX_LENGHT_EMAIL,
         unique=True)
     username = models.CharField(
         verbose_name='Username',
-        max_length=150,
-        unique=True)
+        max_length=MAX_LENGHT,
+        unique=True,
+        validators=UnicodeUsernameValidator())
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=150)
+        max_length=MAX_LENGHT)
     last_name = models.CharField(
         verbose_name='Фамилия',
-        max_length=150)
+        max_length=MAX_LENGHT)
     password = models.CharField(
         verbose_name='Пароль',
-        max_length=150)
+        max_length=MAX_LENGHT)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
@@ -28,6 +34,7 @@ class CustomUser(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+        ordering = ['id']
 
 
 class Subscription(models.Model):
@@ -45,10 +52,14 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        ordering = ['id']
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'user'],
-                name='unique_subscribtion')]
+                name='unique_subscription'),
+            models.CheckConstraint(
+                check=Q(F('author') != F('user')),
+                name='myself_subscription')]
 
     def __str__(self) -> str:
-        return f'{self.author}'
+        return f'{self.author.username}'
