@@ -15,9 +15,10 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
         Method for defining user's subscriptions.
         '''
         request = self.context.get('request')
-        if request.user.is_anonymous:
+        if request is None or request.user.is_anonymous:
             return False
-        return obj.subscription_author.filter(user=request.user).exists()
+        return Subscription.objects.filter(
+            user=request.user, author=obj).exists()
 
     class Meta:
         model = CustomUser
@@ -43,12 +44,18 @@ class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
     Serializer for creating and deleting subscriptions.
     (POST method).
     '''
-    # def validate(self, obj):
-
-    #     return obj
+    def validate(self, data):
+        author = data.get('author')
+        user = data.get('user')
+        if user == author:
+            raise serializers.ValidationError(
+                {'errors': 'Подписка на самого себя невозможна.'}
+            )
+        return data
 
     class Meta:
         model = Subscription
+        fields = ['author', 'user', ]
 
 
 class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
