@@ -138,8 +138,8 @@ class CategoryRecipe(models.Model):
 
 
 class FavoriteRecipe(CategoryRecipe):
-    recipe = models.ForeignKey(related_name='favorite_recipe')
-    user = models.ForeignKey(related_name='favorite_user')
+    recipe = CategoryRecipe.recipe(related_name='favorite_recipe')
+    user = CategoryRecipe.user(related_name='favorite_user')
 
     class Meta:
         verbose_name = 'Избранный рецепт'
