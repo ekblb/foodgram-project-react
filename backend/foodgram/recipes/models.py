@@ -117,17 +117,21 @@ class Recipe(models.Model):
         return f'{self.name}'
 
 
-class CategoryRecipe(models.Model):
+class FavoriteRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name='favorite_recipe')
     user = models.ForeignKey(
         CustomUser,
         verbose_name='Пользователь',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        related_name='favorite_user')
 
     class Meta:
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
         ordering = ('recipe',)
         constraints = [models.UniqueConstraint(
             fields=['recipe', 'user'],
@@ -137,20 +141,25 @@ class CategoryRecipe(models.Model):
         return f'{self.recipe}'
 
 
-class FavoriteRecipe(CategoryRecipe):
-    recipe = CategoryRecipe.recipe(related_name='favorite_recipe')
-    user = CategoryRecipe.user(related_name='favorite_user')
-
-    class Meta:
-        verbose_name = 'Избранный рецепт'
-        verbose_name_plural = 'Избранные рецепты'
-
-
-class ShoppingCart(CategoryRecipe):
-
-    recipe = CategoryRecipe.recipe(related_name='shopping_cart_recipe')
-    user = CategoryRecipe.user(related_name='shopping_cart_user')
+class ShoppingCart(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Рецепт',
+        on_delete=models.CASCADE,
+        related_name='shopping_cart_recipe')
+    user = models.ForeignKey(
+        CustomUser,
+        verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+        related_name='shopping_cart_user')
 
     class Meta:
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'
+        ordering = ('recipe',)
+        constraints = [models.UniqueConstraint(
+            fields=['recipe', 'user'],
+            name='unique_category_recipe')]
+
+    def __str__(self) -> str:
+        return f'{self.recipe}'
