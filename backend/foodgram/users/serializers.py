@@ -80,9 +80,8 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         recipes_limit = int(request.GET.get('recipes_limit'))
         if recipes_limit:
             recipes = recipes[:recipes_limit]
-            return SubscriptionRecipeSerializer(recipes,
-                                                many=True,
-                                                read_only=True).data
+            return SubscriptionRecipeSerializer(
+                recipes, many=True, read_only=True).data
 
     class Meta(CustomUserRetrieveSerializer.Meta):
         model = CustomUser

@@ -28,7 +28,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'debug_toolbar',
     'djoser',
-    'django_filters']
+    'django_filters',
+    'colorfield']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

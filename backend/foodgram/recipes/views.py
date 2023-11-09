@@ -9,17 +9,19 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import pagination, permissions, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .permissions import IsAuthorOrReadOnly
+from .pagination import LimitPageNumberPagination
 
 from .filters import IngredientFilter, RecipeFilters
 from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
 from .serializers import (IngredientInRecipe, IngredientSerializer,
                           RecipeCreateSerializer, RecipeRetrieveSerializer,
-                          RecipeSerializer, TagSerializer)
+                          TagSerializer, ShoppingCartSerializer,
+                          FavoriteRecipeSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -27,8 +29,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     Class for viewing recipes.
     '''
     queryset = Recipe.objects.all()
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    pagination_class = pagination.LimitOffsetPagination
+    permission_classes = (IsAuthorOrReadOnly,)
+    pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilters
 
@@ -37,58 +39,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeRetrieveSerializer
 
-    def get_permissions(self):
-        if self.request.method in ['PATCH', 'DELETE']:
-            return (IsAuthorOrReadOnly(),)
-        return super().get_permissions()
-
-    @action(methods=['POST', 'DELETE'], detail=True)
-    def favorite(self, request, pk):
-        '''
-        Method for creating and deleting favorite recipe.
-        '''
-        recipe = get_object_or_404(Recipe, id=pk)
-
-        if request.method == 'POST':
-            # if request.user.id == recipe.author.id:
-            #     return Response(
-            #         {
-            # 'errors': 'Невозможно добавить свой рецепт в избранное.'},
-            #         status=status.HTTP_400_BAD_REQUEST)
-            serializer = RecipeSerializer(recipe,
-                                          data=request.data,
-                                          context={'request': request})
-            if serializer.is_valid():
-                if not FavoriteRecipe.objects.filter(recipe=recipe,
-                                                     user=request.user
-                                                     ).exists():
-                    FavoriteRecipe.objects.create(recipe=recipe,
-                                                  user=request.user)
-                    return Response(serializer.data,
-                                    status=status.HTTP_201_CREATED)
-                return Response(
-                    {'errors': 'Рецепт уже добавлен в список избранных.'},
-                    status=status.HTTP_400_BAD_REQUEST)
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if request.method == 'DELETE':
-            recipe_delete = FavoriteRecipe.objects.filter(recipe=recipe,
-                                                          user=request.user)
-            if recipe_delete.exists():
-                recipe_delete.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(
-                {'errors': 'Такого рецепта нет в списке избранных.'},
-                status=status.HTTP_400_BAD_REQUEST)
-
     def pdf_gen(self, ingredients_annotate):
         '''
         Method for genereting pdf file which contant list of ingredients.
         '''
         buf = io.BytesIO()
         c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-        pdfmetrics.registerFont(TTFont('FreeSans', 'recipes/FreeSans.ttf'))
+        pdfmetrics.registerFont(
+            TTFont('FreeSans', 'recipes/fonts/FreeSans.ttf'))
         textobj = c.beginText()
         textobj.setTextOrigin(inch, inch)
         textobj.setFont('FreeSans', 14)
@@ -115,58 +73,59 @@ class RecipeViewSet(viewsets.ModelViewSet):
         '''
         Method for downloading user's shopping cart in pdf format.
         '''
-        shopping_cart = ShoppingCart.objects.filter(user=request.user)
-        recipes = Recipe.objects.filter(id__in=shopping_cart.values('recipe'))
-        ingredients = IngredientInRecipe.objects.select_related(
-            'ingredient').filter(id__in=recipes.values('ingredients'))
-        ingredients_annotate = ingredients.values(
+        ingredients = IngredientInRecipe.objects.filter(
+            recipe__shopping_cart_recipe__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit').annotate(
-            sum_amount=Sum('amount'))
+            sum_amount=Sum('amount')).order_by('ingredient__name')
 
-        pdf_ingredients_list = self.pdf_gen(ingredients_annotate)
+        pdf_ingredients_list = self.pdf_gen(ingredients)
 
-        response = FileResponse(pdf_ingredients_list,
-                                as_attachment=True,
-                                filename='shopping_cart.pdf',)
+        response = FileResponse(pdf_ingredients_list, as_attachment=True,
+                                filename='shopping_cart.pdf')
         return response
+
+    @staticmethod
+    def create_instance(serializer_outer, request, pk):
+        '''
+        Method for creating instance in FavoriteRecipe or ShoppingCart Models.
+        '''
+        recipe_user = {'user': request.user.id, 'recipe': pk}
+        serializer = serializer_outer(data=recipe_user,
+                                      context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'Рецепт успешно добавлен.'},
+                        status=status.HTTP_201_CREATED)
+
+    @staticmethod
+    def delete_instance(model, request, pk):
+        '''
+        Method for deleting instance in FavoriteRecipe or ShoppingCart Models.
+        '''
+        get_object_or_404(model, user=request.user,
+                          recipe=get_object_or_404(Recipe, pk=pk)).delete()
+        return Response({'message': 'Рецепт успешно удален.'},
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
         '''
         Method for adding and deleting recipes to user's shopping cart.
         '''
-        recipe = get_object_or_404(Recipe, id=pk)
-
         if request.method == 'POST':
-            # if request.user.id == recipe.author.id:
-            #     return Response(
-            #         {'errors': 'Нельзя добавить свой рецепт в список.'},
-            #         status=status.HTTP_400_BAD_REQUEST)
-            serializer = RecipeSerializer(recipe,
-                                          data=request.data,
-                                          context={'request': request})
-            if serializer.is_valid():
-                if not ShoppingCart.objects.filter(recipe=recipe,
-                                                   user=request.user
-                                                   ).exists():
-                    ShoppingCart.objects.create(recipe=recipe,
-                                                user=request.user)
-                    return Response(serializer.data,
-                                    status=status.HTTP_201_CREATED)
-                return Response(
-                    {'errors': 'Рецепт уже добавлен в список покупок.'},
-                    status=status.HTTP_400_BAD_REQUEST)
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            return self.create_instance(ShoppingCartSerializer, request, pk)
+        elif request.method == 'DELETE':
+            return self.delete_instance(ShoppingCart, request, pk)
 
-        if request.method == 'DELETE':
-            recipe_delete = ShoppingCart.objects.filter(recipe=recipe,
-                                                        user=request.user)
-            if recipe_delete.exists():
-                recipe_delete.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'errors': 'Такого рецепта нет в списке покупок.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+    @action(methods=['POST', 'DELETE'], detail=True)
+    def favorite(self, request, pk):
+        '''
+        Method for adding and deleting favorite recipes.
+        '''
+        if request.method == 'POST':
+            return self.create_instance(FavoriteRecipeSerializer, request, pk)
+        elif request.method == 'DELETE':
+            return self.delete_instance(FavoriteRecipe, request, pk)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

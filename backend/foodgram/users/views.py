@@ -7,6 +7,7 @@ from djoser.views import UserViewSet
 from .models import CustomUser, Subscription
 from .serializers import (SubscriptionRetrieveSerializer,
                           SubscriptionCreateDeleteSerializer)
+from .pagination import LimitPageNumberPagination
 
 
 class CustomUserViewSet(UserViewSet):
@@ -15,7 +16,7 @@ class CustomUserViewSet(UserViewSet):
     '''
     queryset = CustomUser.objects.all()
     permission_classes = (permissions.AllowAny, )
-    # pagination_class = pagination.LimitOffsetPagination
+    pagination_class = LimitPageNumberPagination
 
     @action(methods=['GET'], detail=False,
             permission_classes=[permissions.IsAuthenticated],
@@ -48,8 +49,7 @@ class CustomUserViewSet(UserViewSet):
 
         if request.method == 'DELETE':
             subscription_delete = Subscription.objects.filter(
-                author=author,
-                user=request.user)
+                author=author, user=request.user)
 
             if subscription_delete.delete():
                 return Response(status=status.HTTP_204_NO_CONTENT)
