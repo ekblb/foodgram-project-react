@@ -135,7 +135,7 @@ class FavoriteRecipe(models.Model):
         ordering = ('recipe',)
         constraints = [models.UniqueConstraint(
             fields=['recipe', 'user'],
-            name='unique_category_recipe')]
+            name='unique_favorite')]
 
     def __str__(self) -> str:
         return f'{self.recipe}'
@@ -159,7 +159,7 @@ class ShoppingCart(models.Model):
         ordering = ('recipe',)
         constraints = [models.UniqueConstraint(
             fields=['recipe', 'user'],
-            name='unique_category_recipe')]
+            name='unique_shopping_cart')]
 
     def __str__(self) -> str:
         return f'{self.recipe}'
