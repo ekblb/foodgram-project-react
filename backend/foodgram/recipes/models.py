@@ -147,8 +147,9 @@ class FavoriteRecipe(CategoryRecipe):
 
 
 class ShoppingCart(CategoryRecipe):
-    recipe = models.ForeignKey(related_name='shopping_cart_recipe')
-    user = models.ForeignKey(related_name='shopping_cart_user')
+
+    recipe = CategoryRecipe.recipe(related_name='shopping_cart_recipe')
+    user = CategoryRecipe.user(related_name='shopping_cart_user')
 
     class Meta:
         verbose_name = 'Рецепт в списке покупок'
