@@ -162,7 +162,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         '''
         Method for getting response after creating or updating recipe.
         '''
-        return RecipeRetrieveSerializer(instance, context=self.context).data
+        request = self.context.get('request')
+        return RecipeRetrieveSerializer(
+            instance, context={'request': request}).data
 
 
 class RecipeSerializer(serializers.ModelSerializer):
