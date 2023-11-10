@@ -73,7 +73,8 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'tags', 'author', 'ingredients', 'name', 'image',
-                  'text', 'cooking_time', 'is_in_shopping_cart', 'is_favorited')
+                  'text', 'cooking_time', 'is_in_shopping_cart',
+                  'is_favorited')
 
     def get_is_favorited(self, obj):
         '''

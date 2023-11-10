@@ -69,19 +69,19 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         '''
         Method for counting author's recipes.
         '''
-        return Recipe.objects.filter(author=obj.id).count()
+        return obj.recipe_author.count()
 
     def get_recipes(self, obj):
         '''
         Method for getting author's recipes with parameter 'recipes_limit'.
         '''
-        recipes = obj.author.recipe_author.all()
+        recipes = obj.recipe_author.all()
         request = self.context.get('request')
         recipes_limit = request.GET.get('recipes_limit')
         if recipes_limit:
             recipes = recipes[:int(recipes_limit)]
             return SubscriptionRecipeSerializer(
-                recipes, many=True, read_only=True).data
+                recipes, many=True, context={'request': request}).data
 
     class Meta(CustomUserRetrieveSerializer.Meta):
         model = CustomUser
