@@ -58,7 +58,7 @@ class Subscription(models.Model):
                 fields=['author', 'user'],
                 name='unique_subscription'),
             models.CheckConstraint(
-                check=Q(F('author') != F('user')),
+                check=(~Q(user=F('author'))),
                 name='myself_subscription')]
 
     def __str__(self) -> str:
