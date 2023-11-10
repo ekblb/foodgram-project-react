@@ -72,9 +72,8 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'tags', 'author', 'ingredients',
-                  'name', 'image', 'text', 'cooking_time',
-                  'is_in_shopping_cart', 'is_favorited')
+        fields = ('id', 'tags', 'author', 'ingredients', 'name', 'image',
+                  'text', 'cooking_time', 'is_in_shopping_cart', 'is_favorited')
 
     def get_is_favorited(self, obj):
         '''
@@ -112,23 +111,22 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('ingredients', 'tags', 'name',
-                  'image', 'text', 'cooking_time')
+        fields = ('ingredients', 'tags', 'name', 'image', 'text',
+                  'cooking_time')
 
     @staticmethod
-    def ingredients_index(recipe, ingredients_data):
+    def ingredients_list(recipe, ingredients_data):
         '''
-        Method for getting ingredients indexes from getting recipes.
+        Method for creating ingredient's list for recipes.
         '''
-        ingredients_index = []
+        ingredients_list = []
         for ingredient in ingredients_data:
             ingredient_object = Ingredient.objects.get(
                 id=ingredient['ingredient'])
-            ingredient_in_recipe = IngredientInRecipe.objects.bulk_create(
+            ingredients_list.append(IngredientInRecipe(
                 recipe=recipe, ingredient=ingredient_object,
-                amount=ingredient['amount'])
-            ingredients_index.append(ingredient_in_recipe.id)
-        return ingredients_index
+                amount=ingredient['amount']))
+        IngredientInRecipe.objects.bulk_create(ingredients_list)
 
     @transaction.atomic
     def create(self, validated_data):
@@ -139,8 +137,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
-        ingredients_index = self.ingredients_index(recipe, ingredients_data)
-        recipe.ingredients.set(ingredients_index)
+        self.ingredients_list(recipe, ingredients_data)
         recipe.tags.set(tags_data)
         return recipe
 
