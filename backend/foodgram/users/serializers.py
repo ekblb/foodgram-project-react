@@ -75,7 +75,7 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         '''
         Method for getting author's recipes with parameter 'recipes_limit'.
         '''
-        recipes = obj.recipe_author.all()
+        recipes = obj.author.recipe_author.all()
         request = self.context.get('request')
         recipes_limit = request.GET.get('recipes_limit')
         if recipes_limit:

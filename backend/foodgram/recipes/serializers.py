@@ -7,7 +7,7 @@ from django.db import transaction
 from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingCart, Tag)
 from .constants import (MIN_AMOUNT, MAX_AMOUNT, MIN_COOKING_TIME,
-                        MIN_COOKING_TIME)
+                        MAX_COOKING_TIME)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -107,7 +107,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                                               many=True)
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(min_value=MIN_COOKING_TIME,
-                                            max_value=MIN_COOKING_TIME,
+                                            max_value=MAX_COOKING_TIME,
                                             write_only=True)
 
     class Meta:
