@@ -116,7 +116,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                   'image', 'text', 'cooking_time')
 
     @staticmethod
-    def ingredients_index(self, ingredients_data):
+    def ingredients_index(recipe, ingredients_data):
         '''
         Method for getting ingredients indexes from getting recipes.
         '''
@@ -125,8 +125,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             ingredient_object = Ingredient.objects.get(
                 id=ingredient['ingredient'])
             ingredient_in_recipe = IngredientInRecipe.objects.bulk_create(
-                recipe=id,
-                ingredient=ingredient_object,
+                recipe=recipe, ingredient=ingredient_object,
                 amount=ingredient['amount'])
             ingredients_index.append(ingredient_in_recipe.id)
         return ingredients_index
@@ -139,8 +138,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         author = self.context.get('request').user
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
-        ingredients_index = self.ingredients_index(ingredients_data)
         recipe = Recipe.objects.create(author=author, **validated_data)
+        ingredients_index = self.ingredients_index(recipe, ingredients_data)
         recipe.ingredients.set(ingredients_index)
         recipe.tags.set(tags_data)
         return recipe
