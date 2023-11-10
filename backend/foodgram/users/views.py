@@ -24,7 +24,7 @@ class CustomUserViewSet(UserViewSet):
     def subscriptions(self, request):
         '''Method for getting current user's subscriptions.'''
         subscriptions = CustomUser.objects.filter(
-            subscription_user__user=request.user)
+            subscription_author__user=self.request.user)
         subscriptions_page = self.paginate_queryset(subscriptions)
         serializer = SubscriptionRetrieveSerializer(
             subscriptions_page, context={'request': request}, many=True)
@@ -37,10 +37,6 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(CustomUser, id=pk)
 
         if request.method == 'POST':
-            if request.user.id == author.id:
-                return Response(
-                    {'errors': 'Подписка на самого себя невозможна.'},
-                    status=status.HTTP_400_BAD_REQUEST)
             serializer = SubscriptionCreateDeleteSerializer(
                 author, data=request.data, context={'request': request})
             serializer.is_valid(raise_exception=True)
