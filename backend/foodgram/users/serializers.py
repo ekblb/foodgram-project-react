@@ -62,7 +62,7 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
     Serializer for viewing user's subscriptions
     (GET method).
     '''
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = SubscriptionRecipeSerializer(many=True, read_only=True)
     recipes = serializers.SerializerMethodField()
 
     def get_recipes_count(self, obj):
@@ -71,17 +71,17 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         '''
         return Recipe.objects.filter(author=obj.id).count()
 
-    def get_recipes(self, obj):
-        '''
-        Method for getting author's recipes with parameter 'recipes_limit'.
-        '''
-        recipes = obj.recipe_author.all()
-        request = self.context.get('request')
-        recipes_limit = int(request.GET.get('recipes_limit'))
-        if recipes_limit:
-            recipes = recipes[:recipes_limit]
-            return SubscriptionRecipeSerializer(
-                recipes, many=True, read_only=True).data
+    # def get_recipes(self, obj):
+    #     '''
+    #     Method for getting author's recipes with parameter 'recipes_limit'.
+    #     '''
+    #     recipes = obj.recipe_author.all()
+    #     request = self.context.get('request')
+    #     recipes_limit = int(request.GET.get('recipes_limit'))
+    #     if recipes_limit:
+    #         recipes = recipes[:recipes_limit]
+    #         return SubscriptionRecipeSerializer(
+    #             recipes, many=True, read_only=True).data
 
     class Meta(CustomUserRetrieveSerializer.Meta):
         model = CustomUser
