@@ -62,8 +62,8 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
     Serializer for viewing user's subscriptions
     (GET method).
     '''
-    recipes_count = SubscriptionRecipeSerializer(many=True, read_only=True)
-    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+    recipes = SubscriptionRecipeSerializer(many=True, read_only=True)
 
     def get_recipes_count(self, obj):
         '''
