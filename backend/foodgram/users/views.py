@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from djoser.views import UserViewSet
 from rest_framework import pagination, permissions, status
 from rest_framework.decorators import action
@@ -24,7 +24,8 @@ class CustomUserViewSet(UserViewSet):
         '''
         Method for getting current user's subscriptions.
         '''
-        subscriptions = request.user.subscription_author.all()
+        user = request.user
+        subscriptions = user.subscription_author.all()
         subscriptions_page = self.paginate_queryset(subscriptions)
         serializer = SubscriptionRetrieveSerializer(
             subscriptions_page, context={'request': request}, many=True)
