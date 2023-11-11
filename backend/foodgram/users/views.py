@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import pagination, permissions, status
 from rest_framework.decorators import action
