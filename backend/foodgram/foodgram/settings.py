@@ -100,9 +100,9 @@ DJOSER = {
     'SERIALIZERS': {
         'user': 'users.serializers.CustomUserRetrieveSerializer',
     },
-    # 'HIDE_USERS': {
-    #     False,
-    # },
+    'HIDE_USERS': {
+        False,
+    },
     # 'PERMISSIONS': {
     #     'user_list': ['rest_framework.permissions.AllowAny'],
     # },
