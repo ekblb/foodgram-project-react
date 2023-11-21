@@ -85,7 +85,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         '''Method for genereting pdf file which contant list of ingredients.'''
         buf = io.BytesIO()
         c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
-        pdfmetrics.registerFont(TTFont('FreeSans', 'recipes/FreeSans.ttf'))
+        pdfmetrics.registerFont(
+            TTFont('FreeSans', 'recipes/fonts/FreeSans.ttf'))
         textobj = c.beginText()
         textobj.setTextOrigin(inch, inch)
         textobj.setFont('FreeSans', 14)
