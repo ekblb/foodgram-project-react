@@ -8,11 +8,11 @@ from .models import CustomUser, Subscription
 class CustomUserAdmin(UserAdmin):
     list_display = ('id', 'username')
     list_filter = ('id', 'email', 'username')
-    ordering = ('id')
+    ordering = ('id', )
 
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('id', 'author', 'user')
     list_filter = ('author', 'user')
-    ordering = ('id')
+    ordering = ('id', )
