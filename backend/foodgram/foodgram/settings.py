@@ -103,9 +103,9 @@ DJOSER = {
     'HIDE_USERS': {
         False,
     },
-    'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny'],
-    },
+    # 'PERMISSIONS': {
+    #     'user_list': ['rest_framework.permissions.AllowAny'],
+    # },
 }
 
 REST_FRAMEWORK = {
