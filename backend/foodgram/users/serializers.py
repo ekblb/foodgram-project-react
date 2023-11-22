@@ -66,7 +66,11 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
                                             context={'request': request}).data
 
     class Meta(CustomUserRetrieveSerializer.Meta):
-        fields = ('recipes', 'recipes_count')
+        model = CustomUser
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+        read_only_fields = ('email', 'username', 'first_name', 'last_name',
+                            'is_subscribed', 'recipes', 'recipes_count')
 
 
 class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
