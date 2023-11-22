@@ -65,7 +65,7 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         return SubscriptionRecipeSerializer(recipes, many=True,
                                             context={'request': request}).data
 
-    class Meta(CustomUserRetrieveSerializer.Meta):
+    class Meta:
         model = CustomUser
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count')
