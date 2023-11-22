@@ -27,7 +27,9 @@ class CustomUserViewSet(UserViewSet):
         Method for getting current user's subscriptions.
         '''
         user = request.user
-        subscriptions = user.subscription_author.all()
+        # subscriptions = user.subscription_author.all()
+        subscriptions = CustomUser.objects.filter(
+            subscription_user__username=user)
         subscriptions_page = self.paginate_queryset(subscriptions)
         serializer = SubscriptionRetrieveSerializer(
             subscriptions_page, context={'request': request}, many=True)
