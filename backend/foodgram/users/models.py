@@ -62,4 +62,5 @@ class Subscription(models.Model):
                 name='myself_subscription')]
 
     def __str__(self) -> str:
-        return f'{self.author.username}'
+        # return f'{self.author.username}'
+        return f'{self.author}'
