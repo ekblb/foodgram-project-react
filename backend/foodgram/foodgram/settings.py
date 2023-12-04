@@ -97,12 +97,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 DJOSER = {
-    # 'SERIALIZERS': {
-    #     'user': 'users.serializers.CustomUserRetrieveSerializer',
-    # },
-    'HIDE_USERS': {
-        False,
+    'SERIALIZERS': {
+        'user': 'users.serializers.CustomUserRetrieveSerializer',
     },
+    # 'HIDE_USERS': {
+    #     False,
+    # },
     'PERMISSIONS': {
         'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
