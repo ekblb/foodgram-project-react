@@ -88,7 +88,7 @@ class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context.get('request').user
-        author = get_object_or_404(CustomUser, id=validated_data['pk'])
+        author = get_object_or_404(CustomUser, pk=validated_data['pk'])
         Subscription.objects.create(user=user, author=author)
         serializer = SubscriptionCreateDeleteSerializer(
             author, context={'request': self.context.get('request')})
