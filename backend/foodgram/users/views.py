@@ -28,8 +28,10 @@ class CustomUserViewSet(UserViewSet):
         '''
         user = request.user
         # subscriptions = user.subscription_author.all()
+        # subscriptions = CustomUser.objects.filter(
+        #     subscription_user__author=user)
         subscriptions = CustomUser.objects.filter(
-            subscription_user__author=user)
+            subscription_author__user=user)
         subscriptions_page = self.paginate_queryset(subscriptions)
         serializer = SubscriptionRetrieveSerializer(
             subscriptions_page, context={'request': request}, many=True)
