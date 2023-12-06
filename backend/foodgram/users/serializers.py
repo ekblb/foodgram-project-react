@@ -29,7 +29,7 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
 
 class SubscriptionRecipeSerializer(serializers.ModelSerializer):
     '''
-    Serializer for Recipe Model in CustomUserSubscribe serializer
+    Serializer for Recipe Model in SubscriptionRetrieveSerializer serializer
     (GET method).
     '''
     class Meta:
@@ -40,11 +40,11 @@ class SubscriptionRecipeSerializer(serializers.ModelSerializer):
 
 class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
     '''
-    Serializer for getting instance of Subscription Model
+    Serializer for getting users subscriptions
     (GET method).
     '''
-    recipes_count = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+    recipes = serializers.SerializerMethodField(read_only=True)
 
     def get_recipes_count(self, obj):
         '''
@@ -65,12 +65,13 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         return SubscriptionRecipeSerializer(recipes, many=True,
                                             context={'request': request}).data
 
-    class Meta:
-        model = CustomUser
-        fields = ('email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
-        read_only_fields = ('email', 'username', 'first_name', 'last_name',
-                            'is_subscribed', 'recipes', 'recipes_count')
+    class Meta(CustomUserRetrieveSerializer.Meta):
+        # model = CustomUser
+        # fields = ('email', 'id', 'username', 'first_name', 'last_name',
+        #           'is_subscribed', 'recipes', 'recipes_count')
+        fields = ('recipes', 'recipes_count')
+        # read_only_fields = ('email', 'username', 'first_name', 'last_name',
+        #                     'is_subscribed', 'recipes', 'recipes_count')
 
 
 class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
