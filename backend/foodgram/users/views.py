@@ -42,7 +42,7 @@ class CustomUserViewSet(UserViewSet):
         '''
         if request.method == 'POST':
             serializer = SubscriptionCreateDeleteSerializer(
-                data=request.data, context={'request': request, 'id': pk})
+                data=request.data, context={'request': request, 'pk': pk})
             serializer.is_valid(raise_exception=True)
             subscription_create = serializer.save(id=pk)
             return Response({'data': subscription_create},
