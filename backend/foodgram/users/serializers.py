@@ -49,7 +49,7 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
 
     def get_recipes_count(self, obj):
         '''
-        Method for counting author's recipes.
+        Method for counting authozr's recipes.
         '''
         return obj.recipe_author.count()
 

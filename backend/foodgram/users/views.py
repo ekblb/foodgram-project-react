@@ -40,17 +40,21 @@ class CustomUserViewSet(UserViewSet):
         '''
         Method for creating and deleting user's subscription.
         '''
+        user = request.user
+        author = get_object_or_404(CustomUser, id=pk)
+        serializer = SubscriptionCreateDeleteSerializer(
+            data={'user': user.id, 'author': author.id})
+
         if request.method == 'POST':
-            serializer = SubscriptionCreateDeleteSerializer(
-                data=request.data, context={'request': request, 'id': pk})
             serializer.is_valid(raise_exception=True)
-            subscription_create = serializer.save(id=pk)
-            return Response({'data': subscription_create},
-                            status=status.HTTP_201_CREATED)
+            serializer.save()
+            serializer = SubscriptionRetrieveSerializer(
+                author, context={'request': request},
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
             subscription_delete = get_object_or_404(
-                Subscription, user=self.request.user,
-                author=get_object_or_404(CustomUser, id=pk))
+                Subscription, user=user, author=author)
             subscription_delete.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
