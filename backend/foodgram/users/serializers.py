@@ -67,9 +67,9 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
 
     class Meta(CustomUserRetrieveSerializer.Meta):
         # model = CustomUser
-        # fields = ('email', 'id', 'username', 'first_name', 'last_name',
-        #           'is_subscribed', 'recipes', 'recipes_count')
-        fields = ('recipes', 'recipes_count')
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+        # fields = ('recipes', 'recipes_count')
         # read_only_fields = ('email', 'username', 'first_name', 'last_name',
         #                     'is_subscribed', 'recipes', 'recipes_count')
 
