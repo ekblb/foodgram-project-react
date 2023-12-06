@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from recipes.models import Recipe
 from rest_framework import serializers
 
@@ -56,7 +57,6 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         '''
         Method for getting author's recipes with parameter 'recipes_limit'.
         '''
-        # recipes = obj.author.recipe_author.all()
         recipes = obj.recipe_author.all()
         request = self.context.get('request')
         recipes_limit = request.GET.get('recipes_limit')
@@ -66,12 +66,8 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
                                             context={'request': request}).data
 
     class Meta(CustomUserRetrieveSerializer.Meta):
-        # model = CustomUser
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count')
-        # fields = ('recipes', 'recipes_count')
-        # read_only_fields = ('email', 'username', 'first_name', 'last_name',
-        #                     'is_subscribed', 'recipes', 'recipes_count')
 
 
 class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
@@ -85,7 +81,18 @@ class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
         if user == author:
             raise serializers.ValidationError(
                 {'errors': 'Подписка на самого себя невозможна.'})
+        if Subscription.objects.filter(user=user, author=author).exists():
+            raise serializers.ValidationError(
+                {'errors': 'Подписка уже существует.'})
         return data
+
+    def create(self, validated_data):
+        user = self.context.get('request').user
+        author = get_object_or_404(CustomUser, pk=validated_data['id'])
+        Subscription.objects.create(user=user, author=author)
+        serializer = SubscriptionCreateDeleteSerializer(
+            author, context={'request': self.context.get('request')})
+        return serializer.data
 
     class Meta:
         model = Subscription
