@@ -36,14 +36,14 @@ class CustomUserViewSet(UserViewSet):
 
     @action(methods=['POST', 'DELETE'], detail=True,
             permission_classes=[permissions.IsAuthenticated])
-    def subscribe(self, request, pk):
+    def subscribe(self, request, id):
         '''
         Method for creating and deleting user's subscription.
         '''
         user = request.user
-        author = get_object_or_404(CustomUser, pk=pk)
+        author = get_object_or_404(CustomUser, id=id)
         serializer = SubscriptionCreateDeleteSerializer(
-            data={'user': user.pk, 'author': author.pk})
+            data={'user': user.id, 'author': author.id})
 
         if request.method == 'POST':
             serializer.is_valid(raise_exception=True)
