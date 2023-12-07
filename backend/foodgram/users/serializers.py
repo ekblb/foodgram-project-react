@@ -76,8 +76,8 @@ class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
     (POST method).
     '''
     def validate(self, data):
-        author = data.get('author')
         user = data.get('user')
+        author = data.get('author')
         if user == author:
             raise serializers.ValidationError(
                 {'errors': 'Подписка на самого себя невозможна.'})
@@ -87,12 +87,9 @@ class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = self.context.get('request').user
-        author = get_object_or_404(CustomUser, pk=validated_data['id'])
-        Subscription.objects.create(user=user, author=author)
-        serializer = SubscriptionCreateDeleteSerializer(
-            author, context={'request': self.context.get('request')})
-        return serializer.data
+        user = validated_data.get('user')
+        author = validated_data.get('author')
+        return Subscription.objects.create(user=user, author=author)
 
     class Meta:
         model = Subscription
