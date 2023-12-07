@@ -2,7 +2,7 @@ from django_filters.rest_framework import (FilterSet,
                                            ModelMultipleChoiceFilter, filters)
 from rest_framework.filters import SearchFilter
 
-from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
+from .models import Ingredient, Recipe, Tag
 
 
 class IngredientFilter(SearchFilter):
@@ -10,37 +10,29 @@ class IngredientFilter(SearchFilter):
 
     class Meta:
         model = Ingredient
-        fields = ('name', )
+        fields = ('name',)
 
 
 class RecipeFilters(FilterSet):
     '''Class for filtering favorite recipes and recipes in shopping cart.'''
     tags = ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
                                      field_name='tags__slug',
-                                     to_field_name='slug',
-                                     )
+                                     to_field_name='slug')
     is_favorited = filters.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
         method='filter_is_in_shopping_cart')
 
     class Meta:
         model = Recipe
-        fields = ['is_favorited', 'is_in_shopping_cart', 'tags', 'author', ]
+        fields = ('is_favorited', 'is_in_shopping_cart', 'tags', 'author')
 
     def filter_is_favorited(self, queryset, name, value):
-        if value:
-            favorite_recipes = FavoriteRecipe.objects.filter(
-                user=self.request.user)
-            favorite_recipes_id = favorite_recipes.values('recipe')
-            filter_queryset = queryset.filter(id__in=favorite_recipes_id)
-            return filter_queryset
-        return filter_queryset.none()
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(favorite_recipe__user=self.request.user)
+        return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        if value:
-            shopping_cart_recipes = ShoppingCart.objects.filter(
-                user=self.request.user)
-            shopping_cart_recipes_id = shopping_cart_recipes.values('recipe')
-            filter_queryset = queryset.filter(id__in=shopping_cart_recipes_id)
-            return filter_queryset
-        return filter_queryset.none()
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(
+                shopping_cart_recipe__user=self.request.user)
+        return queryset
