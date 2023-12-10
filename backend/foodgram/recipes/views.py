@@ -92,13 +92,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
         '''Method for downloading user's shopping cart in pdf format.'''
-        shopping_cart = ShoppingCart.objects.filter(user=request.user)
-        recipes = Recipe.objects.filter(id__in=shopping_cart.values('recipe'))
-        ingredients = IngredientInRecipe.objects.select_related(
-            'ingredient').filter(id__in=recipes.values('ingredients'))
-        ingredients_annotate = ingredients.values(
-            'ingredient__name', 'ingredient__measurement_unit').annotate(
-            sum_amount=Sum('amount'))
+        ingredients_annotate = IngredientInRecipe.objects.filter(
+            recipe__shopping_cart_recipe__user=request.user
+        ).values(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(sum_amount=Sum('amount'))
 
         pdf_ingredients_list = self.pdf_gen(ingredients_annotate)
 
