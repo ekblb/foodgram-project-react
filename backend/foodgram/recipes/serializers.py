@@ -23,8 +23,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class IngredientInRecipeRetrieveSerializer(serializers.ModelSerializer):
     '''Serializer for IngredientInRecipe Model (GET method).'''
-    id = serializers.IntegerField(source='ingredient.id')
-    name = serializers.CharField(source='ingredient.name')
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit')
 
@@ -50,9 +50,10 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 class RecipeRetrieveSerializer(serializers.ModelSerializer):
     '''Serializer for Recipe Model (GET method).'''
     author = CustomUserRetrieveSerializer()
-    ingredients = IngredientInRecipeRetrieveSerializer(source='recipe_ingredients',
-                                                       many=True)
+    ingredients = IngredientInRecipeRetrieveSerializer(
+        source='recipe_ingredients', many=True)
     tags = TagSerializer(many=True)
+    image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
