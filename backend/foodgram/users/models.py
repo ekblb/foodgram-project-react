@@ -8,7 +8,6 @@ from .constants import MAX_LENGHT, MAX_LENGHT_EMAIL
 
 
 class CustomUser(AbstractUser):
-
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
         max_length=MAX_LENGHT_EMAIL,

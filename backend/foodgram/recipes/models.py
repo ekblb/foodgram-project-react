@@ -1,25 +1,30 @@
 from django.db import models
-from users.models import CustomUser
+from django.contrib.auth import get_user_model
+from .constants import (MAX_LENGHT_NAME, MAX_LENGHT_COLOR, MAX_LENGHT_SLUG,
+                        MAX_LENGHT_MEASUREMENT, MAX_LENGHT_TEXT)
+
+
+CustomUser = get_user_model()
 
 
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название',
         unique=True,
-        max_length=200)
+        max_length=MAX_LENGHT_NAME)
     color = models.CharField(
         verbose_name='Цвет в HEX',
         unique=True,
-        max_length=7)
+        max_length=MAX_LENGHT_COLOR)
     slug = models.SlugField(
         verbose_name='Уникальный слаг',
         unique=True,
-        max_length=200)
+        max_length=MAX_LENGHT_SLUG)
 
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
-        ordering = ('id',)
+        ordering = ('name',)
 
     def __str__(self):
         return f'{self.name}'
@@ -28,36 +33,18 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название',
-        max_length=200)
+        max_length=MAX_LENGHT_NAME)
     measurement_unit = models.CharField(
         verbose_name='Измеряемая единица',
-        max_length=200)
+        max_length=MAX_LENGHT_MEASUREMENT)
 
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        ordering = ('id',)
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return f'{self.name}'
-
-
-class IngredientInRecipe(models.Model):
-    ingredient = models.ForeignKey(
-        Ingredient,
-        verbose_name='Ингредиент в рецепте',
-        related_name='ingredient_in_recipe',
-        on_delete=models.CASCADE)
-    amount = models.PositiveIntegerField(
-        verbose_name='Количество')
-
-    class Meta:
-        verbose_name = 'Ингредиент в рецепте'
-        verbose_name_plural = 'Ингредиенты в рецепте'
-        ordering = ('id',)
-
-    def __str__(self) -> str:
-        return f'{self.ingredient}'
 
 
 class Recipe(models.Model):
@@ -68,14 +55,14 @@ class Recipe(models.Model):
         on_delete=models.CASCADE)
     name = models.CharField(
         verbose_name='Название',
-        max_length=200)
+        max_length=MAX_LENGHT_NAME)
     image = models.ImageField(
         verbose_name='Картинка')
     text = models.CharField(
         verbose_name='Описание',
-        max_length=200)
+        max_length=MAX_LENGHT_TEXT)
     ingredients = models.ManyToManyField(
-        IngredientInRecipe,
+        'IngredientInRecipe',
         verbose_name='Список ингредиентов',
         related_name='recipe_ingredients')
     tags = models.ManyToManyField(
@@ -91,10 +78,33 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ('-pub_date',)
+        ordering = ('-pub_date', 'name')
 
     def __str__(self) -> str:
         return f'{self.name}'
+
+
+class IngredientInRecipe(models.Model):
+    # recipe = models.ForeignKey(
+    #     Recipe,
+    #     verbose_name='Рецепт',
+    #     related_name='recipe',
+    #     on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient,
+        verbose_name='Ингредиент в рецепте',
+        related_name='ingredient_in_recipe',
+        on_delete=models.CASCADE)
+    amount = models.PositiveIntegerField(
+        verbose_name='Количество')
+
+    class Meta:
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецепте'
+        # ordering = ('recipe', 'ingredient')
+
+    def __str__(self) -> str:
+        return f'{self.ingredient}'
 
 
 class FavoriteRecipe(models.Model):
@@ -139,9 +149,7 @@ class ShoppingCart(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'user'],
-                name='unique_shopping_cart_recipe'
-            )
-        ]
+                name='unique_shopping_cart_recipe')]
 
     def __str__(self) -> str:
         return f'{self.recipe}'
