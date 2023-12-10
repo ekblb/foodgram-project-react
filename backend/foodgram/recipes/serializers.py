@@ -1,6 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
+from rest_framework import serializers, validators
 from users.serializers import CustomUserRetrieveSerializer
+from django.db import transaction
 
 from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingCart, Tag)
@@ -24,20 +25,22 @@ class IngredientInRecipeRetrieveSerializer(serializers.ModelSerializer):
     '''Serializer for IngredientInRecipe Model (GET method).'''
     id = serializers.IntegerField(source='ingredient.id')
     name = serializers.CharField(source='ingredient.name')
-    measurement_unit = serializers.CharField(
+    measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit')
 
     class Meta:
         model = IngredientInRecipe
         fields = ('id', 'name', 'measurement_unit', 'amount')
+        validators = (validators.UniqueTogetherValidator(
+            queryset=IngredientInRecipe.objects.all(),
+            fields=('ingredient', 'recipe')),)
 
 
-class IngredientInRecipeCreateSerializer(serializers.ModelSerializer):
+class IngredientInRecipeSerializer(serializers.ModelSerializer):
     '''Serializer for creating instance of IngredientInRecipe Model
     (POST method).'''
-    id = serializers.IntegerField(source='ingredient',
-                                  write_only=True)
-    amount = serializers.IntegerField(write_only=True)
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    amount = serializers.IntegerField()
 
     class Meta:
         model = IngredientInRecipe
@@ -47,7 +50,8 @@ class IngredientInRecipeCreateSerializer(serializers.ModelSerializer):
 class RecipeRetrieveSerializer(serializers.ModelSerializer):
     '''Serializer for Recipe Model (GET method).'''
     author = CustomUserRetrieveSerializer()
-    ingredients = IngredientInRecipeRetrieveSerializer(many=True)
+    ingredients = IngredientInRecipeRetrieveSerializer(source='recipe',
+                                                       many=True)
     tags = TagSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -82,7 +86,7 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     '''Serializer for creating or updating instance of Recipe Model
     (POST, PATCH methods).'''
-    ingredients = IngredientInRecipeCreateSerializer(many=True)
+    ingredients = IngredientInRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     image = Base64ImageField()
@@ -105,6 +109,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             ingredients_index.append(ingredient_in_recipe.id)
         return ingredients_index
 
+    @transaction.atomic
     def create(self, validated_data):
         '''Method for creating new recipe.'''
         author = self.context.get('request').user
@@ -115,6 +120,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags_data)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         '''Method for updating recipe.'''
         tags_data = validated_data.pop('tags')
@@ -137,7 +143,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     '''Serializer for Recipe Model (GET methods).'''
-    image = Base64ImageField(read_only=True)
 
     class Meta:
         model = Recipe
