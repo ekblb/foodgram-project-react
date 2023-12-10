@@ -14,7 +14,6 @@ Foodgram позволяет:
 - python 3.9.6;
 - Django 4.2.5;
 - DjangoRestFramework 3.14.0;
-<!-- - Docker; -->
  
 
 ## Особенности реализации
