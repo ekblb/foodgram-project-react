@@ -1,9 +1,4 @@
-import base64
-import imghdr
-import uuid
-
-import six
-from django.core.files.base import ContentFile
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from users.serializers import CustomUserRetrieveSerializer
 
@@ -11,73 +6,42 @@ from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingCart, Tag)
 
 
-class Base64ImageField(serializers.ImageField):
-    '''Class for formating image field to base64.'''
-    def to_internal_value(self, data):
-
-        if isinstance(data, six.string_types):
-            if 'data:' in data and ';base64,' in data:
-                header, data = data.split(';base64,')
-
-            try:
-                decoded_file = base64.b64decode(data)
-            except TypeError:
-                self.fail('invalid_image')
-
-            file_name = str(uuid.uuid4())[:12]
-            file_extension = self.get_file_extension(file_name, decoded_file)
-
-            complete_file_name = "%s.%s" % (file_name, file_extension, )
-
-            data = ContentFile(decoded_file, name=complete_file_name)
-
-        return super(Base64ImageField, self).to_internal_value(data)
-
-    def get_file_extension(self, file_name, decoded_file):
-        extension = imghdr.what(file_name, decoded_file)
-        extension = "jpg" if extension == "jpeg" else extension
-
-        return extension
-
-
 class TagSerializer(serializers.ModelSerializer):
     '''Serializer for Tag Model (GET method).'''
     class Meta:
         model = Tag
-        fields = ['id', 'name', 'color', 'slug', ]
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     '''Serializer for Ingredient Model (GET method).'''
     class Meta:
         model = Ingredient
-        fields = ['id', 'name', 'measurement_unit', ]
+        fields = ('id', 'name', 'measurement_unit')
 
 
 class IngredientInRecipeRetrieveSerializer(serializers.ModelSerializer):
     '''Serializer for IngredientInRecipe Model (GET method).'''
-    id = serializers.IntegerField(source='ingredient.id'
-                                  )
+    id = serializers.IntegerField(source='ingredient.id')
     name = serializers.CharField(source='ingredient.name')
     measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit',)
+        source='ingredient.measurement_unit')
 
     class Meta:
         model = IngredientInRecipe
-        fields = ['id', 'name', 'measurement_unit', 'amount', ]
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
 class IngredientInRecipeCreateSerializer(serializers.ModelSerializer):
     '''Serializer for creating instance of IngredientInRecipe Model
     (POST method).'''
     id = serializers.IntegerField(source='ingredient',
-                                  write_only=True,
-                                  )
+                                  write_only=True)
     amount = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = IngredientInRecipe
-        fields = ['id', 'amount', ]
+        fields = ('id', 'amount')
 
 
 class RecipeRetrieveSerializer(serializers.ModelSerializer):
@@ -90,9 +54,9 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ['id', 'tags', 'author', 'ingredients',
+        fields = ('id', 'tags', 'author', 'ingredients',
                   'name', 'image', 'text', 'cooking_time',
-                  'is_in_shopping_cart', 'is_favorited', ]
+                  'is_in_shopping_cart', 'is_favorited')
 
     def get_is_favorited(self, obj):
         '''Method for defining favorite recipes.'''
@@ -120,14 +84,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     (POST, PATCH methods).'''
     ingredients = IngredientInRecipeCreateSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
-                                              many=True,
-                                              )
+                                              many=True)
     image = Base64ImageField()
 
     class Meta:
         model = Recipe
-        fields = ['ingredients', 'tags', 'name',
-                  'image', 'text', 'cooking_time', ]
+        fields = ('ingredients', 'tags', 'name',
+                  'image', 'text', 'cooking_time')
 
     def ingredients_index(self, validated_data):
         '''Method for getting ingredients indexes from getting recipes.'''
@@ -168,8 +131,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         '''Method for getting response after creating or updating recipe.'''
         serializer = RecipeRetrieveSerializer(instance,
-                                              context=self.context,
-                                              )
+                                              context=self.context)
         return serializer.data
 
 
@@ -179,5 +141,5 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'image', 'cooking_time', ]
-        read_only_fields = ['name', 'cooking_time']
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('name', 'cooking_time')

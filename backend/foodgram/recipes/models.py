@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from .constants import (MAX_LENGHT_NAME, MAX_LENGHT_COLOR, MAX_LENGHT_SLUG,
                         MAX_LENGHT_MEASUREMENT, MAX_LENGHT_TEXT)
+from colorfield.validators import color_hex_validator
 
 
 CustomUser = get_user_model()
@@ -14,6 +15,7 @@ class Tag(models.Model):
         max_length=MAX_LENGHT_NAME)
     color = models.CharField(
         verbose_name='Цвет в HEX',
+        validators=color_hex_validator,
         unique=True,
         max_length=MAX_LENGHT_COLOR)
     slug = models.SlugField(
@@ -62,7 +64,8 @@ class Recipe(models.Model):
         verbose_name='Описание',
         max_length=MAX_LENGHT_TEXT)
     ingredients = models.ManyToManyField(
-        'IngredientInRecipe',
+        Ingredient,
+        through='IngredientInRecipe',
         verbose_name='Список ингредиентов',
         related_name='recipe_ingredients')
     tags = models.ManyToManyField(
@@ -85,11 +88,11 @@ class Recipe(models.Model):
 
 
 class IngredientInRecipe(models.Model):
-    # recipe = models.ForeignKey(
-    #     Recipe,
-    #     verbose_name='Рецепт',
-    #     related_name='recipe',
-    #     on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Рецепт',
+        related_name='recipe',
+        on_delete=models.CASCADE)
     ingredient = models.ForeignKey(
         Ingredient,
         verbose_name='Ингредиент в рецепте',
@@ -101,7 +104,7 @@ class IngredientInRecipe(models.Model):
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
-        # ordering = ('recipe', 'ingredient')
+        ordering = ('recipe', 'ingredient')
 
     def __str__(self) -> str:
         return f'{self.ingredient}'
