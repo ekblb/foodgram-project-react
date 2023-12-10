@@ -50,7 +50,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 class RecipeRetrieveSerializer(serializers.ModelSerializer):
     '''Serializer for Recipe Model (GET method).'''
     author = CustomUserRetrieveSerializer()
-    ingredients = IngredientInRecipeRetrieveSerializer(source='recipe',
+    ingredients = IngredientInRecipeRetrieveSerializer(source='recipe_ingredients',
                                                        many=True)
     tags = TagSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
