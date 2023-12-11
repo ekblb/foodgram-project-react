@@ -2,6 +2,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 from users.serializers import CustomUserRetrieveSerializer
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingCart, Tag)
@@ -84,10 +85,20 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
         return False
 
 
+class RecipeSerializer(serializers.ModelSerializer):
+    '''Serializer for Recipe Model (GET methods).'''
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('name', 'cooking_time')
+
+
 class RecipeCreateSerializer(serializers.ModelSerializer):
     '''Serializer for creating or updating instance of Recipe Model
     (POST, PATCH methods).'''
-    ingredients = IngredientInRecipeSerializer(many=True)
+    ingredients = IngredientInRecipeSerializer(source='recipe_ingredients',
+                                               many=True)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     image = Base64ImageField()
@@ -97,42 +108,28 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         fields = ('ingredients', 'tags', 'name',
                   'image', 'text', 'cooking_time')
 
-    def ingredients_index(self, validated_data):
-        '''Method for getting ingredients indexes from getting recipes.'''
-        ingredients_data = validated_data.pop('ingredients')
-        ingredients_index = []
-        for ingredient in ingredients_data:
-            ingredient_object = Ingredient.objects.get(
-                id=ingredient['ingredient'])
-            ingredient_in_recipe = IngredientInRecipe.objects.create(
-                ingredient=ingredient_object,
-                amount=ingredient['amount'])
-            ingredients_index.append(ingredient_in_recipe.id)
-        return ingredients_index
-
     @transaction.atomic
     def create(self, validated_data):
         '''Method for creating new recipe.'''
         author = self.context.get('request').user
+        ingredients_data = validated_data.pop('recipe_ingredients')
         tags_data = validated_data.pop('tags')
-        ingredients_index = self.ingredients_index(validated_data)
         recipe = Recipe.objects.create(author=author, **validated_data)
-        recipe.ingredients.set(ingredients_index)
         recipe.tags.set(tags_data)
+        ingredients_index(recipe, ingredients_data)
         return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
         '''Method for updating recipe.'''
         tags_data = validated_data.pop('tags')
-        ingredients_index = self.ingredients_index(validated_data)
-        super().update(instance, validated_data)
-        IngredientInRecipe.objects.filter(
-            id__in=instance.ingredients.all()).delete()
+        ingredients_data = validated_data.pop('recipe_ingredients')
         instance.tags.clear()
-        instance.ingredients.clear()
         instance.tags.set(tags_data)
-        instance.ingredients.set(ingredients_index)
+        IngredientInRecipe.objects.filter(recipe=instance).delete()
+        super().update(instance, validated_data)
+        ingredients_index(instance, ingredients_data)
+        instance.save()
         return instance
 
     def to_representation(self, instance):
@@ -142,10 +139,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class RecipeSerializer(serializers.ModelSerializer):
-    '''Serializer for Recipe Model (GET methods).'''
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
-        read_only_fields = ('name', 'cooking_time')
+def ingredients_index(recipe, ingredients_data):
+    '''Method for getting ingredients indexes from getting recipes.'''
+    ingredients_index = []
+    for ingredient in ingredients_data:
+        ingredient_object = get_object_or_404(Ingredient,
+                                              id=ingredient.get('id'))
+        ingredient_in_recipe = IngredientInRecipe.objects.create(
+            recipe=recipe, ingredient=ingredient_object,
+            amount=ingredient['amount'])
+        ingredients_index.append(ingredient_in_recipe.id)
+    IngredientInRecipe.objects.bulk_create(ingredients_index)
