@@ -87,7 +87,6 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     '''Serializer for Recipe Model (GET methods).'''
-
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
@@ -145,8 +144,7 @@ def ingredients_index(recipe, ingredients_data):
     for ingredient in ingredients_data:
         ingredient_object = get_object_or_404(Ingredient,
                                               id=ingredient.get('id'))
-        ingredient_in_recipe = IngredientInRecipe.objects.create(
+        ingredients_index.append(IngredientInRecipe(
             recipe=recipe, ingredient=ingredient_object,
-            amount=ingredient['amount'])
-        ingredients_index.append(ingredient_in_recipe.id)
+            amount=ingredient['amount']))
     IngredientInRecipe.objects.bulk_create(ingredients_index)
