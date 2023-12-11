@@ -10,7 +10,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import permissions, status, viewsets, validators
+from rest_framework import permissions, status, validators, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 

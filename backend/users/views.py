@@ -4,11 +4,10 @@ from rest_framework import pagination, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-
 from .models import CustomUser, Subscription
-from .serializers import (SubscriptionRetrieveSerializer,
+from .serializers import (CustomUserRetrieveSerializer,
                           SubscriptionCreateDeleteSerializer,
-                          CustomUserRetrieveSerializer)
+                          SubscriptionRetrieveSerializer)
 
 
 class CustomUserViewSet(UserViewSet):

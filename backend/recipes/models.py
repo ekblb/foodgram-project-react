@@ -1,9 +1,9 @@
-from django.db import models
-from django.contrib.auth import get_user_model
-from .constants import (MAX_LENGHT_NAME, MAX_LENGHT_COLOR, MAX_LENGHT_SLUG,
-                        MAX_LENGHT_MEASUREMENT, MAX_LENGHT_TEXT)
 from colorfield.validators import color_hex_validator
+from django.contrib.auth import get_user_model
+from django.db import models
 
+from .constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
+                        MAX_LENGHT_NAME, MAX_LENGHT_SLUG, MAX_LENGHT_TEXT)
 
 CustomUser = get_user_model()
 
