@@ -2,7 +2,6 @@ import io
 
 from django.db.models import Sum
 from django.http import FileResponse
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from foodgram.permissions import AuthorOrReadOnly
 from reportlab.lib.pagesizes import letter
@@ -10,15 +9,14 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import permissions, status, viewsets, validators
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 
 from .filters import IngredientFilter, RecipeFilters
 from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
 from .serializers import (IngredientInRecipe, IngredientSerializer,
                           RecipeCreateSerializer, RecipeRetrieveSerializer,
-                          RecipeSerializer, TagSerializer)
+                          TagSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -37,22 +35,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method in ['PATCH', 'DELETE']:
             return (AuthorOrReadOnly(),)
         return super().get_permissions()
-
-    def add_recipe(self, model, request, pk):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = self.request.user
-        if model.objects.filter(recipe=recipe, user=user).exists():
-            raise validators.ValidationError('Рецепт уже добавлен')
-        model.objects.create(recipe=recipe, user=user)
-        serializer = RecipeSerializer(recipe)
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete_recipe(self, model, request, pk):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = self.request.user
-        obj = get_object_or_404(model, recipe=recipe, user=user)
-        obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
