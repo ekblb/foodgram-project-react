@@ -142,9 +142,7 @@ def ingredients_index(recipe, ingredients_data):
     '''Method for getting ingredients indexes from getting recipes.'''
     ingredients_index = []
     for ingredient in ingredients_data:
-        ingredient_object = get_object_or_404(Ingredient,
-                                              id=ingredient['ingredient'])
         ingredients_index.append(IngredientInRecipe(
-            recipe=recipe, ingredient=ingredient_object,
+            recipe=recipe, ingredient=ingredient['id'],
             amount=ingredient['amount']))
     IngredientInRecipe.objects.bulk_create(ingredients_index)
