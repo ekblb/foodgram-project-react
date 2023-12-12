@@ -5,9 +5,9 @@ from .models import CustomUser, Subscription
 
 
 class CustomUserRetrieveSerializer(serializers.ModelSerializer):
-    '''
+    """
     Serializer for CustomUser Model (GET method).
-    '''
+    """
     is_subscribed = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
@@ -28,10 +28,10 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionRecipeSerializer(serializers.ModelSerializer):
-    '''
+    """
     Serializer for Recipe Model in SubscriptionRetrieveSerializer serializer
     (GET method).
-    '''
+    """
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
@@ -39,10 +39,10 @@ class SubscriptionRecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
-    '''
+    """
     Serializer for getting users subscriptions
     (GET method).
-    '''
+    """
     recipes_count = serializers.SerializerMethodField(read_only=True)
     recipes = serializers.SerializerMethodField(read_only=True)
 
@@ -53,9 +53,9 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         return obj.recipe_author.count()
 
     def get_recipes(self, obj):
-        '''
+        """
         Method for getting author's recipes with parameter 'recipes_limit'.
-        '''
+        """
         recipes = obj.recipe_author.all()
         request = self.context.get('request')
         recipes_limit = request.GET.get('recipes_limit')
@@ -70,10 +70,10 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
 
 
 class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
-    '''
+    """
     Serializer for creating and deleting subscriptions.
     (POST method).
-    '''
+    """
     def validate(self, data):
         user = data.get('user')
         author = data.get('author')

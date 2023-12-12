@@ -8,21 +8,27 @@ from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
 
 
 class TagSerializer(serializers.ModelSerializer):
-    '''Serializer for Tag Model (GET method).'''
+    """
+    Serializer for Tag Model (GET method).
+    """
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    '''Serializer for Ingredient Model (GET method).'''
+    """
+    Serializer for Ingredient Model (GET method).
+    """
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
 class IngredientInRecipeRetrieveSerializer(serializers.ModelSerializer):
-    '''Serializer for IngredientInRecipe Model (GET method).'''
+    """
+    Serializer for IngredientInRecipe Model (GET method).
+    """
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -37,8 +43,10 @@ class IngredientInRecipeRetrieveSerializer(serializers.ModelSerializer):
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
-    '''Serializer for creating instance of IngredientInRecipe Model
-    (POST method).'''
+    """
+    Serializer for creating instance of IngredientInRecipe Model
+    (POST method).
+    """
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
 
@@ -48,7 +56,9 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeRetrieveSerializer(serializers.ModelSerializer):
-    '''Serializer for Recipe Model (GET method).'''
+    """
+    Serializer for Recipe Model (GET method).
+    """
     author = CustomUserRetrieveSerializer()
     ingredients = IngredientInRecipeRetrieveSerializer(
         source='recipe_ingredients', many=True)
@@ -64,7 +74,9 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart', 'is_favorited')
 
     def get_is_favorited(self, obj):
-        '''Method for defining favorite recipes.'''
+        """
+        Method for defining favorite recipes.
+        """
         if self.context.get('request').user.is_authenticated:
             if FavoriteRecipe.objects.filter(
                 recipe=obj.id, user=self.context.get('request').user.id
@@ -74,7 +86,9 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
         return False
 
     def get_is_in_shopping_cart(self, obj):
-        '''Method for defining recipes in shopping cart.'''
+        """
+        Method for defining recipes in shopping cart.
+        """
         if self.context.get('request').user.is_authenticated:
             if ShoppingCart.objects.filter(
                 recipe=obj.id, user=self.context.get('request').user.id
@@ -85,7 +99,9 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    '''Serializer for Recipe Model (GET methods).'''
+    """
+    Serializer for Recipe Model (GET methods).
+    """
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
@@ -93,8 +109,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    '''Serializer for creating or updating instance of Recipe Model
-    (POST, PATCH methods).'''
+    """
+    Serializer for creating or updating instance of Recipe Model
+    (POST, PATCH methods).
+    """
     ingredients = IngredientInRecipeSerializer(source='recipe_ingredients',
                                                many=True)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
@@ -108,7 +126,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        '''Method for creating new recipe.'''
+        """
+        Method for creating new recipe.
+        """
         author = self.context.get('request').user
         ingredients_data = validated_data.pop('recipe_ingredients')
         tags_data = validated_data.pop('tags')
@@ -119,7 +139,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        '''Method for updating recipe.'''
+        """
+        Method for updating recipe.
+        """
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('recipe_ingredients')
         instance.tags.clear()
@@ -131,14 +153,18 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-        '''Method for getting response after creating or updating recipe.'''
+        """
+        Method for getting response after creating or updating recipe.
+        """
         serializer = RecipeRetrieveSerializer(instance,
                                               context=self.context)
         return serializer.data
 
 
 def ingredients_index(recipe, ingredients_data):
-    '''Method for getting ingredients indexes from getting recipes.'''
+    """
+    Method for getting ingredients indexes from getting recipes.
+    """
     ingredients_index = []
     for ingredient in ingredients_data:
         ingredients_index.append(IngredientInRecipe(

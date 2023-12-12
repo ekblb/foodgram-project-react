@@ -22,7 +22,9 @@ from .serializers import (IngredientInRecipe, IngredientSerializer,
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    '''Class for viewing recipes.'''
+    """
+    Class for viewing recipes.
+    """
     queryset = Recipe.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
@@ -56,14 +58,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
-        '''Method for creating and deleting favorite recipe.'''
+        """
+        Method for creating and deleting favorite recipe.
+        """
         if request.method == 'POST':
             return self.add_recipe(FavoriteRecipe, request, pk)
         else:
             return self.delete_recipe(FavoriteRecipe, request, pk)
 
     def pdf_gen(self, ingredients_annotate):
-        '''Method for genereting pdf file which contant list of ingredients.'''
+        """
+        Method for genereting pdf file which contant list of ingredients.
+        """
         buf = io.BytesIO()
         c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
         pdfmetrics.registerFont(
@@ -91,7 +97,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(methods=['GET'], detail=False,
             permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
-        '''Method for downloading user's shopping cart in pdf format.'''
+        """
+        Method for downloading user's shopping cart in pdf format.
+        """
         ingredients_annotate = IngredientInRecipe.objects.filter(
             recipe__shopping_cart_recipe__user=request.user
         ).values(
@@ -107,7 +115,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
-        '''Method for adding and deleting recipes to user's shopping cart.'''
+        """
+        Method for adding and deleting recipes to user's shopping cart.
+        """
         if request.method == 'POST':
             return self.add_recipe(ShoppingCart, request, pk)
         else:
@@ -115,7 +125,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
-    '''Class for viewing tags.'''
+    """
+    Class for viewing tags.
+    """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
@@ -123,7 +135,9 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    '''Class for viewing ingredients.'''
+    """
+    Class for viewing ingredients.
+    """
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None

@@ -14,7 +14,9 @@ class IngredientFilter(SearchFilter):
 
 
 class RecipeFilters(FilterSet):
-    '''Class for filtering favorite recipes and recipes in shopping cart.'''
+    """
+    Class for filtering favorite recipes and recipes in shopping cart.
+    """
     tags = ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
                                      field_name='tags__slug',
                                      to_field_name='slug')
