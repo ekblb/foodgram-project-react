@@ -12,11 +12,12 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         '''Method for defining user's subscriptions.'''
-        if self.context.get('request'):
-            if Subscription.objects.filter(
-                author=obj.id, user=self.context.get('request').user.id
-            ).exists():
-                return True
+        request = self.context.get('request')
+        if (request and request.user.is_authenticated
+            and Subscription.objects.filter(
+                author=obj.id,
+                user=self.context.get('request').user.id).exists()):
+            return True
         return False
 
     class Meta:
@@ -80,15 +81,7 @@ class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
         if user == author:
             raise serializers.ValidationError(
                 {'errors': 'Подписка на самого себя невозможна.'})
-        if Subscription.objects.filter(user=user, author=author).exists():
-            raise serializers.ValidationError(
-                {'errors': 'Подписка уже существует.'})
         return data
-
-    def create(self, validated_data):
-        user = validated_data.get('user')
-        author = validated_data.get('author')
-        return Subscription.objects.create(user=user, author=author)
 
     class Meta:
         model = Subscription
