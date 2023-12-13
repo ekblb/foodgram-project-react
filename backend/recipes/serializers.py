@@ -115,17 +115,17 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         fields = ('ingredients', 'tags', 'name',
                   'image', 'text', 'cooking_time')
 
-    # def validate_ingredients(self, data):
-    #     if not data:
-    #         raise ValueError({
-    #             'errors': 'Отсутствует список ингредиентов.'}
-    #         )
+    def validate_ingredients(self, data):
+        if not data:
+            raise ValueError({
+                'errors': 'Отсутствует список ингредиентов.'}
+            )
 
-    # def validate_tags(self, data):
-    #     if not data:
-    #         raise ValueError({
-    #             'errors': 'Отсутствует тег.'}
-    #         )
+    def validate_tags(self, data):
+        if not data:
+            raise ValueError({
+                'errors': 'Отсутствует тег.'}
+            )
 
     @transaction.atomic
     def create(self, validated_data):
@@ -159,9 +159,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients_data = validated_data.pop('recipe_ingredients')
         instance.tags.clear()
         instance.tags.set(tags_data)
-        instance.recipe_ingredients.clear()
+        IngredientInRecipe.objects.filter(recipe=instance).delete()
+        super().update(instance, validated_data)
         ingredients_index(instance, ingredients_data)
-        return super().update(instance, validated_data)
+        instance.save()
+        return instance
 
     def to_representation(self, instance):
         """
