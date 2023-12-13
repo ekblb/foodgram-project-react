@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from .models import CustomUser, Subscription
 from .serializers import (CustomUserRetrieveSerializer,
-                          SubscriptionCreateDeleteSerializer,
+                          SubscriptionCreateSerializer,
                           SubscriptionRetrieveSerializer)
 
 
@@ -41,8 +41,8 @@ class CustomUserViewSet(UserViewSet):
         """
         user = request.user
         author = get_object_or_404(CustomUser, id=id)
-        serializer = SubscriptionCreateDeleteSerializer(
-            data={'user': user.id, 'author': author.id})
+        serializer = SubscriptionCreateSerializer(data={'user': user.id,
+                                                        'author': author.id})
 
         if request.method == 'POST':
             serializer.is_valid(raise_exception=True)
@@ -52,8 +52,6 @@ class CustomUserViewSet(UserViewSet):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
-            subscription_delete = get_object_or_404(
-                Subscription, user=user, author=author)
-            subscription_delete.delete()
+        if Subscription.objects.filter(user=user, author=author).delete():
             return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)

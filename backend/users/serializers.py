@@ -70,7 +70,7 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
 
-class SubscriptionCreateDeleteSerializer(serializers.ModelSerializer):
+class SubscriptionCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating and deleting subscriptions.
     (POST method).
