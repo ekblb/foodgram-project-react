@@ -145,11 +145,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Method for updating recipe.
         """
-        tags_data = validated_data.pop('tags')
-        ingredients_data = validated_data.pop('recipe_ingredients')
-        IngredientInRecipe.objects.filter(recipe=instance).clear()
-        ingredients_index(instance, ingredients_data)
-        instance.tags.set(tags_data)
+        if 'tags' in validated_data:
+            tags_data = validated_data.pop('tags')
+            instance.tags.clear()
+            instance.tags.set(tags_data)
+        if 'ingredients' in validated_data:
+            ingredients_data = validated_data.pop('recipe_ingredients')
+            instance.ingredients.clear()
+            ingredients_index(instance, ingredients_data)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
