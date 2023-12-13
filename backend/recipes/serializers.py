@@ -155,15 +155,23 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         #     ingredients_index(instance, ingredients_data)
         # return super().update(instance, validated_data)
 
-        tags_data = validated_data.pop('tags')
-        ingredients_data = validated_data.pop('recipe_ingredients')
-        instance.tags.clear()
-        instance.tags.set(tags_data)
-        IngredientInRecipe.objects.filter(recipe=instance).delete()
-        super().update(instance, validated_data)
-        ingredients_index(instance, ingredients_data)
-        instance.save()
-        return instance
+        # tags_data = validated_data.pop('tags')
+        # ingredients_data = validated_data.pop('recipe_ingredients')
+        # instance.tags.clear()
+        # instance.tags.set(tags_data)
+        # IngredientInRecipe.objects.filter(recipe=instance).delete()
+        # super().update(instance, validated_data)
+        # ingredients_index(instance, ingredients_data)
+        # instance.save()
+        # return instance
+
+        if 'recipe_ingredients' in validated_data:
+            ingredients_data = validated_data.pop('recipe_ingredients')
+            instance.recipe_ingredients.clear()
+            self.ingredients_index(ingredients_data, instance)
+        if 'tags' in validated_data:
+            instance.tags.set(validated_data.pop('tags'))
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         """
