@@ -41,10 +41,10 @@ class CustomUserViewSet(UserViewSet):
         """
         user = request.user
         author = get_object_or_404(CustomUser, id=id)
-        serializer = SubscriptionCreateSerializer(data={'user': user.id,
-                                                        'author': author.id})
 
         if request.method == 'POST':
+            serializer = SubscriptionCreateSerializer(
+                data={'user': user.id, 'author': author.id})
             serializer.is_valid(raise_exception=True)
             serializer.save()
             serializer = SubscriptionRetrieveSerializer(
