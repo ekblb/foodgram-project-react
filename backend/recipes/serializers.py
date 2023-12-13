@@ -165,8 +165,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         # instance.save()
         # return instance
 
-        if 'recipe_ingredients' in validated_data:
-            ingredients_data = validated_data.pop('recipe_ingredients')
+        if 'ingredients' in validated_data:
+            ingredients_data = validated_data.pop('ingredients')
             instance.ingredients.clear()
             ingredients_index(ingredients_data, instance)
         if 'tags' in validated_data:
