@@ -115,6 +115,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         fields = ('ingredients', 'tags', 'name',
                   'image', 'text', 'cooking_time')
 
+    def validate(self, data):
+        if data.get('tags') is None or data.get('ingredients') is None:
+            raise serializers.ValidationError(
+                {'errors': 'Поля "tags" и "ingredients" обязательны.'})
+        return data
+
     @transaction.atomic
     def create(self, validated_data):
         """
