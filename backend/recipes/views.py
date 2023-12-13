@@ -26,7 +26,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     Class for viewing recipes.
     """
     queryset = Recipe.objects.all()
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (AuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilters
 
@@ -34,11 +34,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method in ['POST', 'PATCH']:
             return RecipeCreateSerializer
         return RecipeRetrieveSerializer
-
-    def get_permissions(self):
-        if self.request.method in ['PATCH', 'DELETE']:
-            return (AuthorOrReadOnly(),)
-        return super().get_permissions()
 
     def add_recipe(self, model, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
@@ -63,8 +58,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         if request.method == 'POST':
             return self.add_recipe(FavoriteRecipe, request, pk)
-        else:
-            return self.delete_recipe(FavoriteRecipe, request, pk)
+        return self.delete_recipe(FavoriteRecipe, request, pk)
 
     def pdf_gen(self, ingredients_annotate):
         """
@@ -104,7 +98,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe__shopping_cart_recipe__user=request.user
         ).values(
             'ingredient__name', 'ingredient__measurement_unit'
-        ).annotate(sum_amount=Sum('amount'))
+        ).annotate(sum_amount=Sum('amount')).ordered('ingredient__name')
 
         pdf_ingredients_list = self.pdf_gen(ingredients_annotate)
 
@@ -120,8 +114,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         if request.method == 'POST':
             return self.add_recipe(ShoppingCart, request, pk)
-        else:
-            return self.delete_recipe(ShoppingCart, request, pk)
+        return self.delete_recipe(ShoppingCart, request, pk)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
