@@ -16,7 +16,7 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
         if (request and request.user.is_authenticated
             and Subscription.objects.filter(
                 author=obj.id,
-                user=self.context.get('request').user.id).exists()):
+                user=request.user.id).exists()):
             return True
         return False
 

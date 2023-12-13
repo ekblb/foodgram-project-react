@@ -1,6 +1,6 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers, validators
+from rest_framework import serializers
 from users.serializers import CustomUserRetrieveSerializer
 
 from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
@@ -37,9 +37,6 @@ class IngredientInRecipeRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientInRecipe
         fields = ('id', 'name', 'measurement_unit', 'amount')
-        validators = (validators.UniqueTogetherValidator(
-            queryset=IngredientInRecipe.objects.all(),
-            fields=('ingredient', 'recipe')),)
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
@@ -48,7 +45,6 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
     (POST method).
     """
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
-    amount = serializers.IntegerField()
 
     class Meta:
         model = IngredientInRecipe
@@ -63,7 +59,6 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
     ingredients = IngredientInRecipeRetrieveSerializer(
         source='recipe_ingredients', many=True)
     tags = TagSerializer(many=True)
-    image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -77,25 +72,21 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
         """
         Method for defining favorite recipes.
         """
-        if self.context.get('request').user.is_authenticated:
-            if FavoriteRecipe.objects.filter(
-                recipe=obj.id, user=self.context.get('request').user.id
-            ).exists():
-                return True
-            return False
-        return False
+        request = self.context.get('request')
+        return (request and request.user.is_authenticated
+                and FavoriteRecipe.objects.filter(
+                    recipe=obj.id,
+                    user=self.context.get('request').user.id).exists())
 
     def get_is_in_shopping_cart(self, obj):
         """
         Method for defining recipes in shopping cart.
         """
-        if self.context.get('request').user.is_authenticated:
-            if ShoppingCart.objects.filter(
-                recipe=obj.id, user=self.context.get('request').user.id
-            ).exists():
-                return True
-            return False
-        return False
+        request = self.context.get('request')
+        return (request and request.user.is_authenticated
+                and ShoppingCart.objects.filter(
+                    recipe=obj.id,
+                    user=self.context.get('request').user.id).exists())
 
 
 class RecipeSerializer(serializers.ModelSerializer):
