@@ -145,29 +145,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Method for updating recipe.
         """
-        # if 'tags' in validated_data:
-        #     tags_data = validated_data.pop('tags')
-        #     instance.tags.clear()
-        #     instance.tags.set(tags_data)
-        # if 'recipe_ingredients' in validated_data:
-        #     ingredients_data = validated_data.pop('recipe_ingredients')
-        #     instance.recipe_ingredients.clear()
-        #     ingredients_index(instance, ingredients_data)
-        # return super().update(instance, validated_data)
 
-        # tags_data = validated_data.pop('tags')
-        # ingredients_data = validated_data.pop('recipe_ingredients')
-        # instance.tags.clear()
-        # instance.tags.set(tags_data)
-        # IngredientInRecipe.objects.filter(recipe=instance).delete()
-        # super().update(instance, validated_data)
-        # ingredients_index(instance, ingredients_data)
-        # instance.save()
-        # return instance
-
-        if 'ingredients' in validated_data:
-            ingredients_data = validated_data.pop('ingredients')
-            instance.ingredients.clear()
+        if 'recipe_ingredients' in validated_data:
+            ingredients_data = validated_data.pop('recipe_ingredients')
+            instance.ingredients_data.clear()
             ingredients_index(ingredients_data, instance)
         if 'tags' in validated_data:
             instance.tags.set(validated_data.pop('tags'))
