@@ -55,10 +55,10 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
     """
     Serializer for Recipe Model (GET method).
     """
-    author = CustomUserRetrieveSerializer()
+    author = CustomUserRetrieveSerializer(read_only=True)
     ingredients = IngredientInRecipeRetrieveSerializer(
         source='recipe_ingredients', many=True)
-    tags = TagSerializer(many=True)
+    tags = TagSerializer(many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -149,7 +149,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tags_data = validated_data.pop('tags')
             instance.tags.clear()
             instance.tags.set(tags_data)
-        if 'ingredients' in validated_data:
+        if 'recipe_ingredients' in validated_data:
             ingredients_data = validated_data.pop('recipe_ingredients')
             instance.recipe_ingredients.clear()
             ingredients_index(instance, ingredients_data)
