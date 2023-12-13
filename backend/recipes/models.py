@@ -1,9 +1,10 @@
-from colorfield.validators import color_hex_validator
+from colorfield import fields
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from .constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
-                        MAX_LENGHT_NAME, MAX_LENGHT_SLUG, MAX_LENGHT_TEXT)
+                        MAX_LENGHT_NAME, MAX_LENGHT_SLUG)
 
 CustomUser = get_user_model()
 
@@ -13,9 +14,8 @@ class Tag(models.Model):
         verbose_name='Название',
         unique=True,
         max_length=MAX_LENGHT_NAME)
-    color = models.CharField(
+    color = fields.ColorField(
         verbose_name='Цвет в HEX',
-        validators=[color_hex_validator],
         unique=True,
         max_length=MAX_LENGHT_COLOR)
     slug = models.SlugField(
@@ -29,7 +29,7 @@ class Tag(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
 
 
 class Ingredient(models.Model):
@@ -44,9 +44,12 @@ class Ingredient(models.Model):
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         ordering = ('name',)
+        constraints = [models.UniqueConstraint(
+            fields=['name', 'measurement_unit'],
+            name='unique_name_measurement_unit')]
 
     def __str__(self) -> str:
-        return f'{self.name}'
+        return self.name
 
 
 class Recipe(models.Model):
@@ -61,8 +64,7 @@ class Recipe(models.Model):
     image = models.ImageField(
         verbose_name='Картинка')
     text = models.CharField(
-        verbose_name='Описание',
-        max_length=MAX_LENGHT_TEXT)
+        verbose_name='Описание')
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientInRecipe',
@@ -74,7 +76,13 @@ class Recipe(models.Model):
         verbose_name='Список тегов',
         related_name='recipe_tags')
     cooking_time = models.PositiveIntegerField(
-        verbose_name='Время приготовления (мин.)')
+        verbose_name='Время приготовления (мин.)',
+        validators=[MinValueValidator(
+            limit_value=1,
+            message='Значение не может быть меньше 1 мин.'),
+            MaxValueValidator(
+                limit_value=200,
+                message='Значение не может быть больше 200 мин.')])
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True)
@@ -85,7 +93,7 @@ class Recipe(models.Model):
         ordering = ('-pub_date', 'name')
 
     def __str__(self) -> str:
-        return f'{self.name}'
+        return self.name
 
 
 class IngredientInRecipe(models.Model):
@@ -106,9 +114,12 @@ class IngredientInRecipe(models.Model):
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
         ordering = ('recipe', 'ingredient')
+        constraints = [models.UniqueConstraint(
+            fields=['recipe', 'ingredient'],
+            name='unique_recipe_ingredient')]
 
     def __str__(self) -> str:
-        return f'{self.ingredient}'
+        return f'{self.recipe} - {self.ingredient}'
 
 
 class FavoriteRecipe(models.Model):
@@ -126,13 +137,12 @@ class FavoriteRecipe(models.Model):
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'user'],
-                name='unique_favorite_recipe')]
+        constraints = [models.UniqueConstraint(
+            fields=['recipe', 'user'],
+            name='unique_favorite_recipe')]
 
     def __str__(self) -> str:
-        return f'{self.recipe}'
+        return f'{self.user} - {self.recipe}'
 
 
 class ShoppingCart(models.Model):
@@ -150,10 +160,9 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'user'],
-                name='unique_shopping_cart_recipe')]
+        constraints = [models.UniqueConstraint(
+            fields=['recipe', 'user'],
+            name='unique_shopping_cart_recipe')]
 
     def __str__(self) -> str:
-        return f'{self.recipe}'
+        return f'{self.user} - {self.recipe}'
