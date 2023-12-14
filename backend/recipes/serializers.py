@@ -127,6 +127,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     raise ValueError(
                         {'errors': 'Данный ингредиент уже добавлен в рецепт.'})
                 ingredients_list.append(ingredient_id)
+                return data
         raise ValueError({'errors': 'В рецепте отсутствуют ингредиенты.'})
 
     @transaction.atomic
