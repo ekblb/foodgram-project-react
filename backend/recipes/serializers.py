@@ -115,17 +115,19 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         fields = ('ingredients', 'tags', 'name',
                   'image', 'text', 'cooking_time')
 
-    # def validate_ingredients(self, data):
-    #     if not data:
-    #         raise ValueError({
-    #             'errors': 'Отсутствует список ингредиентов.'}
-    #         )
+    def validate_ingredients(self, data):
+        ingredients = data.get('recipe_ingredients')
+        # tags = data.get('tags')
 
-    # def validate_tags(self, data):
-    #     if not data:
-    #         raise ValueError({
-    #             'errors': 'Отсутствует тег.'}
-    #         )
+        if ingredients:
+            ingredients_list = []
+            for ingredient in ingredients:
+                ingredient_id = ingredient['id']
+                if ingredient_id in ingredients_list:
+                    raise ValueError(
+                        {'errors': 'Данный ингредиент уже добавлен в рецепт.'})
+                ingredients_list.append(ingredient_id)
+        raise ValueError({'errors': 'В рецепте отсутствуют ингредиенты.'})
 
     @transaction.atomic
     def create(self, validated_data):
