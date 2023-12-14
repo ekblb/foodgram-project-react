@@ -114,9 +114,9 @@ class IngredientInRecipe(models.Model):
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
         ordering = ('recipe', 'ingredient')
-        # constraints = [models.UniqueConstraint(
-        #     fields=['recipe', 'ingredient'],
-        #     name='unique_recipe_ingredient')]
+        constraints = [models.UniqueConstraint(
+            fields=['recipe', 'ingredient'],
+            name='unique_recipe_ingredient')]
 
     def __str__(self) -> str:
         return f'{self.recipe} - {self.ingredient}'
