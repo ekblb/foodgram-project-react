@@ -116,7 +116,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                   'image', 'text', 'cooking_time')
 
     def validate_ingredients(self, data):
-        ingredients = data.get('recipe_ingredients')
+        ingredients = data.pop('recipe_ingredients')
         # tags = data.get('tags')
 
         if ingredients:
