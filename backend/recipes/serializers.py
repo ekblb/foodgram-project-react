@@ -134,11 +134,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         tags_list = []
         for tag in tags:
-            tag_id = tag['id']
-            if tag_id in tags_list:
+            if tag in tags_list:
                 raise ValueError(
                     {'errors': 'Данный тег уже добавлен в рецепт.'})
-            tags_list.append(tag_id)
+            tags_list.append(tag)
 
         return data
 
