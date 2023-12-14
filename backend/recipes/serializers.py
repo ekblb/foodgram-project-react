@@ -117,7 +117,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = data['recipe_ingredients']
-        tags = data.get('tags')
+        tags = data['tags']
 
         if not ingredients:
             raise ValueError({'errors': 'В рецепте отсутствуют ингредиенты.'})
