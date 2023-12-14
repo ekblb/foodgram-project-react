@@ -47,8 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def delete_recipe(self, model, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
-        if not model.objects.filter(recipe=recipe,
-                                    user=user).delete().exists():
+        if not model.objects.filter(recipe=recipe, user=user).delete():
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
