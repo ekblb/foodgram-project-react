@@ -24,7 +24,9 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         """
         Method for getting response after adding recipe.
         """
-        serializer = RecipeSerializer(instance, context=self.context)
+        request = self.context.get('request')
+        serializer = RecipeSerializer(instance.recipe,
+                                      context={'request': request})
         return serializer.data
 
 
