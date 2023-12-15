@@ -18,7 +18,8 @@ from .filters import IngredientFilter, RecipeFilters
 from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
 from .serializers import (IngredientInRecipe, IngredientSerializer,
                           RecipeCreateSerializer, RecipeRetrieveSerializer,
-                          RecipeSerializer, TagSerializer)
+                          TagSerializer, FavoriteRecipeSerializer,
+                          ShoppingCartSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -35,16 +36,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeRetrieveSerializer
 
-    def add_recipe(self, model, request, pk):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = self.request.user
-        if model.objects.filter(recipe=recipe, user=user).exists():
-            raise validators.ValidationError('Рецепт уже добавлен')
-        model.objects.create(recipe=recipe, user=user)
-        serializer = RecipeSerializer(recipe)
+    def add_recipe(self, serializer_name, request, pk):
+        """
+        Method for adding recipe to Favorite or to Shopping Cart.
+        """
+        serializer = serializer_name(
+            data={'user': request.user.id, 'recipe': pk},
+            context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe(self, model, request, pk):
+        """
+        Method for deleting recipe from Favorite or from Shopping Cart.
+        """
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
         if not model.objects.filter(recipe=recipe, user=user).delete():
@@ -57,7 +63,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Method for creating and deleting favorite recipe.
         """
         if request.method == 'POST':
-            return self.add_recipe(FavoriteRecipe, request, pk)
+            return self.add_recipe(FavoriteRecipeSerializer, request, pk)
         return self.delete_recipe(FavoriteRecipe, request, pk)
 
     def pdf_gen(self, ingredients_annotate):
@@ -113,7 +119,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Method for adding and deleting recipes to user's shopping cart.
         """
         if request.method == 'POST':
-            return self.add_recipe(ShoppingCart, request, pk)
+            return self.add_recipe(ShoppingCartSerializer, request, pk)
         return self.delete_recipe(ShoppingCart, request, pk)
 
 

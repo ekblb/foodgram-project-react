@@ -1,10 +1,52 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
+from rest_framework import serializers, validators
 from users.serializers import CustomUserRetrieveSerializer
 
 from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingCart, Tag)
+
+
+class FavoriteRecipeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for FavoriteRecipe Model (POST method).
+    """
+    class Meta:
+        model = FavoriteRecipe
+        fields = ('id', 'recipe', 'user')
+        validators = [validators.UniqueTogetherValidator(
+            queryset=FavoriteRecipe.objects.all(),
+            fields=['recipe', 'user'],
+            message='Рецепт уже добавлен в Избранные.'
+        )]
+
+    def to_representation(self, instance):
+        """
+        Method for getting response after adding recipe.
+        """
+        serializer = RecipeSerializer(instance, context=self.context)
+        return serializer.data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """
+    Serializer for ShoppingCart Model (POST method).
+    """
+    class Meta:
+        model = ShoppingCart
+        fields = ('id', 'recipe', 'user')
+        validators = [validators.UniqueTogetherValidator(
+            queryset=ShoppingCart.objects.all(),
+            fields=['recipe', 'user'],
+            message='Рецепт уже добавлен в Список покупок.'
+        )]
+
+    def to_representation(self, instance):
+        """
+        Method for getting response after adding recipe.
+        """
+        serializer = RecipeSerializer(instance, context=self.context)
+        return serializer.data
 
 
 class TagSerializer(serializers.ModelSerializer):
