@@ -4,6 +4,7 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from foodgram.pagination import PageNumberLimitPagination
 from foodgram.permissions import AuthorOrReadOnly
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
@@ -16,11 +17,10 @@ from rest_framework.response import Response
 
 from .filters import IngredientFilter, RecipeFilters
 from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
-from .serializers import (IngredientInRecipe, IngredientSerializer,
-                          RecipeCreateSerializer, RecipeRetrieveSerializer,
-                          TagSerializer, FavoriteRecipeSerializer,
-                          ShoppingCartSerializer)
-from foodgram.pagination import PageNumberLimitPagination
+from .serializers import (FavoriteRecipeSerializer, IngredientInRecipe,
+                          IngredientSerializer, RecipeCreateSerializer,
+                          RecipeRetrieveSerializer, ShoppingCartSerializer,
+                          TagSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
