@@ -4,8 +4,6 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from foodgram.pagination import PageNumberLimitPagination
-from foodgram.permissions import AuthorOrReadOnly
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
@@ -13,7 +11,11 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+
+from foodgram.pagination import PageNumberLimitPagination
+from foodgram.permissions import AuthorOrReadOnly
 
 from .filters import IngredientFilter, RecipeFilters
 from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
@@ -97,7 +99,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return buf
 
     @action(methods=['GET'], detail=False,
-            permission_classes=[permissions.IsAuthenticated])
+            permission_classes=[permissions.IsAuthenticated],
+            pagination_class=PageNumberPagination)
     def download_shopping_cart(self, request):
         """
         Method for downloading user's shopping cart in pdf format.

@@ -2,6 +2,7 @@ from colorfield import fields
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
 from foodgram.constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
                                 MAX_LENGHT_NAME, MAX_LENGHT_SLUG)
 

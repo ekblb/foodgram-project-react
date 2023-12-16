@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from foodgram.pagination import PageNumberLimitPagination
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from foodgram.pagination import PageNumberLimitPagination
 
 from .models import CustomUser, Subscription
 from .serializers import (CustomUserRetrieveSerializer,
