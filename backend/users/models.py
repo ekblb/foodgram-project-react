@@ -3,7 +3,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import F, Q
 
-from .constants import MAX_LENGHT, MAX_LENGHT_EMAIL
+from foodgram.constants import MAX_LENGHT, MAX_LENGHT_EMAIL
 
 
 class CustomUser(AbstractUser):

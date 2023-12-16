@@ -20,6 +20,7 @@ from .serializers import (IngredientInRecipe, IngredientSerializer,
                           RecipeCreateSerializer, RecipeRetrieveSerializer,
                           TagSerializer, FavoriteRecipeSerializer,
                           ShoppingCartSerializer)
+from foodgram.pagination import PageNumberLimitPagination
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -27,6 +28,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     Class for viewing recipes.
     """
     queryset = Recipe.objects.all()
+    pagination_class = PageNumberLimitPagination
     permission_classes = (AuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilters
@@ -129,7 +131,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    pagination_class = None
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
@@ -139,7 +140,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    pagination_class = None
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (IngredientFilter,)
     search_fields = ('^name',)

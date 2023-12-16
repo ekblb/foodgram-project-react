@@ -8,6 +8,7 @@ from .models import CustomUser, Subscription
 from .serializers import (CustomUserRetrieveSerializer,
                           SubscriptionCreateSerializer,
                           SubscriptionRetrieveSerializer)
+from foodgram.pagination import PageNumberLimitPagination
 
 
 class CustomUserViewSet(UserViewSet):
@@ -16,6 +17,7 @@ class CustomUserViewSet(UserViewSet):
     """
     queryset = CustomUser.objects.all()
     permission_classes = (permissions.AllowAny, )
+    pagination_class = PageNumberLimitPagination
     serializer_class = CustomUserRetrieveSerializer
 
     @action(methods=['GET'], detail=False,
