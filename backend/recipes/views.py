@@ -109,7 +109,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe__shopping_cart_recipe__user=request.user
         ).values(
             'ingredient__name', 'ingredient__measurement_unit'
-        ).annotate(sum_amount=Sum('amount'))
+        ).annotate(sum_amount=Sum('amount')).order_by('ingredient__name')
 
         pdf_ingredients_list = self.pdf_gen(ingredients_annotate)
 
