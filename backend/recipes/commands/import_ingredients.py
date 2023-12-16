@@ -9,6 +9,8 @@ class Command(BaseCommand):
     """
     Class for loading ingredients.csv to the database.
     """
+    help = 'Load ingredients.csv to the database'
+
     def handle(self, *args, **options):
         with open('data/ingredients.csv', encoding='utf-8') as file:
             file_reader = csv.reader(file)
