@@ -3,8 +3,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from .constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
-                        MAX_LENGHT_NAME, MAX_LENGHT_SLUG)
+from foodgram.constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
+                                MAX_LENGHT_NAME, MAX_LENGHT_SLUG)
 
 CustomUser = get_user_model()
 
