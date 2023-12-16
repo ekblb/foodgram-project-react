@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework import pagination, permissions, status
+from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -16,13 +16,12 @@ class CustomUserViewSet(UserViewSet):
     Class for viewing users.
     """
     queryset = CustomUser.objects.all()
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
     pagination_class = PageNumberLimitPagination
     serializer_class = CustomUserRetrieveSerializer
 
     @action(methods=['GET'], detail=False,
-            permission_classes=[permissions.IsAuthenticated],
-            pagination_class=pagination.PageNumberPagination)
+            permission_classes=[permissions.IsAuthenticated])
     def subscriptions(self, request):
         """
         Method for getting current user's subscriptions.
