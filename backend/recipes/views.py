@@ -99,8 +99,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return buf
 
     @action(methods=['GET'], detail=False,
-            permission_classes=[permissions.IsAuthenticated],
-            pagination_class=PageNumberPagination)
+            permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
         """
         Method for downloading user's shopping cart in pdf format.
