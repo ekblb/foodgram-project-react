@@ -16,5 +16,3 @@ class Command(BaseCommand):
                 name, measurement_unit = row
                 Ingredient.objects.get_or_create(
                     name=name, measurement_unit=measurement_unit)
-
-# sudo docker-compose exec backend python manage.py load_ingredients
