@@ -12,7 +12,7 @@ class Command(BaseCommand):
     help = 'Load ingredients.csv to the database'
 
     def handle(self, *args, **options):
-        with open('data/ingredients.csv', encoding='utf-8') as file:
+        with open('recipes/data/ingredients.csv', encoding='utf-8') as file:
             file_reader = csv.reader(file)
             for row in file_reader:
                 name, measurement_unit = row
