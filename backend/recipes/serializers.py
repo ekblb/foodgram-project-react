@@ -153,7 +153,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     (POST, PATCH methods).
     """
     ingredients = IngredientInRecipeSerializer(source='recipe_ingredients',
-                                               many=True, write_only=True)
+                                               many=True)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     image = Base64ImageField()
