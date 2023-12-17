@@ -198,6 +198,30 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         return data
 
+    def validate_tags(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                'Теги не могут быть пустыми!'
+            )
+        tags_set = set(value)
+        if len(value) != len(tags_set):
+            raise serializers.ValidationError(
+                'Теги не могут повторяться!'
+            )
+        return value
+
+    def validate_ingredients(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                'Ингредиенты не могут быть пустыми!'
+            )
+        ingredient_set = {ingredient['id'] for ingredient in value}
+        if len(value) != len(ingredient_set):
+            raise serializers.ValidationError(
+                'Ингредиенты не могут повторяться!'
+            )
+        return value
+
     @transaction.atomic
     def create(self, validated_data):
         """
@@ -216,10 +240,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Method for updating recipe.
         """
-        ingredients_data = validated_data.pop('recipe_ingredients')
-        instance.ingredients.clear()
-        ingredients_index(instance, ingredients_data)
-        instance.tags.set(validated_data.pop('tags'))
+        if 'recipe_ingredients' in validated_data:
+            ingredients_data = validated_data.pop('recipe_ingredients')
+            instance.ingredients.clear()
+            ingredients_index(instance, ingredients_data)
+        if 'tags' in validated_data:
+            instance.tags.set(validated_data.pop('tags'))
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
