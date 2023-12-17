@@ -165,11 +165,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         ingredients = data['recipe_ingredients']
         tags = data['tags']
+        image = data['image']
 
         if not ingredients:
             raise ValueError({'errors': 'В рецепте отсутствуют ингредиенты.'})
         if not tags:
             raise ValueError({'errors': 'В рецепте отсутствуют теги.'})
+        if not image:
+            raise ValueError({'errors': 'В рецепте отсутствует изображение.'})
 
         ingredients_list = []
         for ingredient in ingredients:
