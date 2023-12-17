@@ -1,6 +1,7 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
+from rest_framework.exceptions import ValidationError
 
 from users.serializers import CustomUserRetrieveSerializer
 
@@ -168,24 +169,27 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         image = data['image']
 
         if not ingredients:
-            raise ValueError({'errors': 'В рецепте отсутствуют ингредиенты.'})
+            raise ValidationError(
+                {'errors': 'В рецепте отсутствуют ингредиенты.'})
         if not tags:
-            raise ValueError({'errors': 'В рецепте отсутствуют теги.'})
+            raise ValidationError(
+                {'errors': 'В рецепте отсутствуют теги.'})
         if not image:
-            raise ValueError({'errors': 'В рецепте отсутствует изображение.'})
+            raise ValidationError(
+                {'errors': 'В рецепте отсутствует изображение.'})
 
         ingredients_list = []
         for ingredient in ingredients:
             ingredient_id = ingredient['id']
             if ingredient_id in ingredients_list:
-                raise ValueError(
+                raise ValidationError(
                     {'errors': 'Данный ингредиент уже добавлен в рецепт.'})
             ingredients_list.append(ingredient_id)
 
         tags_list = []
         for tag in tags:
             if tag in tags_list:
-                raise ValueError(
+                raise ValidationError(
                     {'errors': 'Данный тег уже добавлен в рецепт.'})
             tags_list.append(tag)
 
