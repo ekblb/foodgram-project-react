@@ -163,35 +163,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         fields = ('ingredients', 'tags', 'name',
                   'image', 'text', 'cooking_time')
 
-    def validate_tags(self, value):
-        if not value:
-            raise serializers.ValidationError(
-                'Теги не могут быть пустыми!'
-            )
-        tags_set = set(value)
-        if len(value) != len(tags_set):
-            raise serializers.ValidationError(
-                'Теги не могут повторяться!'
-            )
-        return value
-
-    def validate_ingredients(self, value):
-        if not value:
-            raise serializers.ValidationError(
-                'Ингредиенты не могут быть пустыми!'
-            )
-        ingredient_set = {ingredient['id'] for ingredient in value}
-        if len(value) != len(ingredient_set):
-            raise serializers.ValidationError(
-                'Ингредиенты не могут повторяться!'
-            )
-        return value
-
     def validate(self, data):
         ingredients = data['recipe_ingredients']
         tags = data['tags']
-        self.validate_tags(tags)
-        self.validate_ingredients(ingredients)
 
         image = data['image']
 
