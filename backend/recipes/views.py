@@ -46,9 +46,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = serializer_name(
             data={'user': request.user.id, 'recipe': pk},
             context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(data=serializer.data,
+                            status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete_recipe(self, model, request, pk):
         """
