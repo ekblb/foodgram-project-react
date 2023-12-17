@@ -153,9 +153,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     (POST, PATCH methods).
     """
     ingredients = IngredientInRecipeSerializer(source='recipe_ingredients',
-                                               many=True)
+                                               many=True, write_only=True)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
-                                              many=True)
+                                              many=True, write_only=True)
     image = Base64ImageField()
 
     class Meta:
@@ -184,6 +184,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             if ingredient_id in ingredients_list:
                 raise ValidationError(
                     {'errors': 'Данный ингредиент уже добавлен в рецепт.'})
+            if int(ingredient_id['amount']) <= 0:
+                raise ValidationError(
+                    {'amount': 'Количество должно быть больше 0.'})
             ingredients_list.append(ingredient_id)
 
         tags_list = []
