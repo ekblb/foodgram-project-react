@@ -70,7 +70,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Method for creating and deleting favorite recipe.
         """
-        recipe = get_object_or_404(Recipe, pk=pk)
+        # recipe = get_object_or_404(Recipe, pk=pk)
+        recipe = Recipe.objects.filter(pk=pk)
+        if not recipe.exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         user = self.request.user
         if request.method == 'POST':
             if FavoriteRecipe.objects.filter(user=user,
@@ -137,7 +140,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Method for adding and deleting recipes to user's shopping cart.
         """
-        recipe = get_object_or_404(Recipe, pk=pk)
+        # recipe = get_object_or_404(Recipe, pk=pk)
+        recipe = Recipe.objects.filter(pk=pk)
+        if not recipe.exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         user = self.request.user
         if request.method == 'POST':
             if ShoppingCart.objects.filter(user=user,
