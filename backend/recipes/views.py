@@ -46,10 +46,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Method for adding recipe to Favorite or to Shopping Cart.
         """
-        try:
-            recipe = Recipe.objects.get(id=pk)
-        except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = serializer_name(
             data={'user': request.user.id, 'recipe': pk},
             context={'request': request})
