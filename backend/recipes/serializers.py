@@ -240,15 +240,19 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Method for updating recipe.
         """
-        tags_data = validated_data.pop('tags')
-        ingredients_data = validated_data.pop('recipe_ingredients')
-        instance = super().update(instance, validated_data)
-        instance.tags.clear()
-        instance.tags.set(tags_data)
-        instance.ingredients.clear()
-        self.create_ingredients(ingredients_data, instance)
-        instance.save()
-        return instance
+        if 'recipe_ingredients' in validated_data:
+            ingredients_data = validated_data.pop('recipe_ingredients')
+            instance.ingredients.clear()
+            ingredients_index(instance, ingredients_data)
+        else:
+            raise serializers.ValidationError(
+                'Ингредиенты не могут быть пустыми!')
+        if 'tags' in validated_data:
+            instance.tags.set(validated_data.pop('tags'))
+        else:
+            raise serializers.ValidationError(
+                'Теги не могут быть пустыми!')
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         """
