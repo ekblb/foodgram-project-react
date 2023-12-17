@@ -78,6 +78,8 @@ class CustomUserViewSet(UserViewSet):
                 'errors': 'Вы не можете отписываться от самого себя'},
                 status=status.HTTP_400_BAD_REQUEST)
 
-        if not Subscription.objects.filter(user=user, author=author).delete():
+        subscription = Subscription.objects.filter(user=user, author=author)
+        if not subscription.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
