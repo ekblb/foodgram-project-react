@@ -45,6 +45,14 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(CustomUser, id=id)
 
         if request.method == 'POST':
+            if user == author:
+                return Response({
+                    'errors': 'Вы не можете подписываться на самого себя'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            if Subscription.objects.filter(user=user, author=author).exists():
+                return Response({
+                    'errors': 'Вы уже подписаны на данного пользователя'
+                }, status=status.HTTP_400_BAD_REQUEST)
             serializer = SubscriptionCreateSerializer(
                 data={'user': user.id, 'author': author.id})
             serializer.is_valid(raise_exception=True)
@@ -53,7 +61,10 @@ class CustomUserViewSet(UserViewSet):
                 author, context={'request': request},
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+        if user == author:
+            return Response({
+                'errors': 'Вы не можете отписываться от самого себя'},
+                status=status.HTTP_400_BAD_REQUEST)
         if Subscription.objects.filter(user=user, author=author).delete():
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -65,9 +65,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Method for creating and deleting favorite recipe.
         """
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
         if request.method == 'POST':
+            if FavoriteRecipe.objects.filter(user=user,
+                                             recipe=recipe).exists():
+                return Response(
+                    {'errors': f'{recipe.name} уже добавили'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             return self.add_recipe(FavoriteRecipeSerializer, request, pk)
-        return self.delete_recipe(FavoriteRecipe, request, pk)
+        if FavoriteRecipe.objects.filter(user=user, recipe=recipe).exists():
+            return self.delete_recipe(FavoriteRecipe, request, pk)
+        return Response({'errors': f'Нет такого рецепта {recipe.name}'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def pdf_gen(self, ingredients_annotate):
         """
@@ -121,9 +132,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Method for adding and deleting recipes to user's shopping cart.
         """
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
         if request.method == 'POST':
+            if ShoppingCart.objects.filter(user=user,
+                                           recipe=recipe).exists():
+                return Response(
+                    {'errors': f'{recipe.name} уже добавили'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             return self.add_recipe(ShoppingCartSerializer, request, pk)
-        return self.delete_recipe(ShoppingCart, request, pk)
+        if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
+            return self.delete_recipe(ShoppingCart, request, pk)
+        return Response({'errors': f'Нет такого рецепта {recipe.name}'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
