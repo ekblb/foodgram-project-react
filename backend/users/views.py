@@ -72,10 +72,12 @@ class CustomUserViewSet(UserViewSet):
                 author, context={'request': request},
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         if user == author:
             return Response({
                 'errors': 'Вы не можете отписываться от самого себя'},
                 status=status.HTTP_400_BAD_REQUEST)
+
         if not Subscription.objects.filter(user=user, author=author).delete():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
