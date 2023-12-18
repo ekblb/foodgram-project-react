@@ -63,7 +63,7 @@ class Recipe(models.Model):
         max_length=MAX_LENGHT_NAME)
     image = models.ImageField(
         verbose_name='Картинка')
-    text = models.CharField(
+    text = models.TextField(
         verbose_name='Описание')
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -81,8 +81,8 @@ class Recipe(models.Model):
             limit_value=1,
             message='Значение не может быть меньше 1 мин.'),
             MaxValueValidator(
-                limit_value=200,
-                message='Значение не может быть больше 200 мин.')])
+                limit_value=2147483647,
+                message='Значение не может быть больше 2147483647 мин.')])
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True)
@@ -108,7 +108,13 @@ class IngredientInRecipe(models.Model):
         related_name='ingredient_in_recipe',
         on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(
-        verbose_name='Количество')
+        verbose_name='Количество',
+        validators=[MinValueValidator(
+            limit_value=1,
+            message='Значение не может быть меньше 1.'),
+            MaxValueValidator(
+                limit_value=2147483647,
+                message='Значение не может быть больше 2147483647 мин.')])
 
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
