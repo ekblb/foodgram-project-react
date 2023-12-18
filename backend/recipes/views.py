@@ -39,6 +39,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeRetrieveSerializer
 
+    # без переопределения метода ниже не проходят 2 теста
+    # с update_recipe_without_ingredients_field // Second User
+    def partial_update(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
     def add_recipe(self, serializer_name, request, pk):
         """
         Method for adding recipe to Favorite or to Shopping Cart.
