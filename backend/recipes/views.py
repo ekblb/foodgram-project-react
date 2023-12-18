@@ -57,11 +57,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
         recipe_delete = model.objects.filter(recipe=recipe, user=user).delete()
-        print(recipe_delete)
-        if recipe_delete[0] == 0:
-            return Response('Данный рецепт не добавлен.',
-                            status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        # if recipe_delete[0] == 0:
+        #     return Response('Данный рецепт не добавлен.',
+        #                     status=status.HTTP_400_BAD_REQUEST)
+        return Response(f'{recipe_delete}', status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
