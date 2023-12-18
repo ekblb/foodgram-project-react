@@ -65,7 +65,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if delete_recipe[0] == 0:
             return Response({'errors': 'Данный рецепт не добавлен.'},
                             status=status.HTTP_400_BAD_REQUEST)
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
