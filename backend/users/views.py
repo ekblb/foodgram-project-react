@@ -66,7 +66,7 @@ class UserViewSet(DjoserUserViewSet):
 
         subscription_delete = Subscription.objects.filter(
             user=user, author=author).delete()
-        if subscription_delete[0] is None:
+        if subscription_delete[0] == 0:
             return Response('Такой подписки не существует.',
                             status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
