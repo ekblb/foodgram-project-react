@@ -41,9 +41,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeRetrieveSerializer
 
-    def partial_update(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
     def add_recipe(self, serializer_name, request, pk):
         """
         Method for adding recipe to Favorite or to Shopping Cart.
@@ -51,11 +48,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = serializer_name(
             data={'user': request.user.id, 'recipe': pk},
             context={'request': request})
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(data=serializer.data,
-                            status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe(self, model, request, pk):
         """
@@ -63,8 +58,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
-        if not model.objects.filter(recipe=recipe, user=user).delete():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        recipe_delete = model.objects.filter(recipe=recipe, user=user).delete()
+        if recipe_delete[0] == 0:
+            return Response('Данный рецепт не добавлен.',
+                            status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['POST', 'DELETE'], detail=True)
@@ -72,20 +69,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Method for creating and deleting favorite recipe.
         """
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = self.request.user
         if request.method == 'POST':
-            if FavoriteRecipe.objects.filter(user=user,
-                                             recipe=recipe).exists():
-                return Response(
-                    {'errors': f'{recipe.name} уже добавили'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
             return self.add_recipe(FavoriteRecipeSerializer, request, pk)
-        if FavoriteRecipe.objects.filter(user=user, recipe=recipe).exists():
-            return self.delete_recipe(FavoriteRecipe, request, pk)
-        return Response({'errors': f'Нет такого рецепта {recipe.name}'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return self.delete_recipe(FavoriteRecipe, request, pk)
 
     def pdf_gen(self, ingredients_annotate):
         """
@@ -139,20 +125,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         Method for adding and deleting recipes to user's shopping cart.
         """
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = self.request.user
         if request.method == 'POST':
-            if ShoppingCart.objects.filter(user=user,
-                                           recipe=recipe).exists():
-                return Response(
-                    {'errors': f'{recipe.name} уже добавили'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
             return self.add_recipe(ShoppingCartSerializer, request, pk)
-        if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
-            return self.delete_recipe(ShoppingCart, request, pk)
-        return Response({'errors': f'Нет такого рецепта {recipe.name}'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return self.delete_recipe(ShoppingCart, request, pk)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

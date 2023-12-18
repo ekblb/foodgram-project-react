@@ -15,7 +15,7 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = FavoriteRecipe
-        fields = ('id', 'recipe', 'user')
+        fields = ('recipe', 'user')
         validators = [validators.UniqueTogetherValidator(
             queryset=FavoriteRecipe.objects.all(),
             fields=['recipe', 'user'],
@@ -38,7 +38,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = ShoppingCart
-        fields = ('id', 'recipe', 'user')
+        fields = ('recipe', 'user')
         validators = [validators.UniqueTogetherValidator(
             queryset=ShoppingCart.objects.all(),
             fields=['recipe', 'user'],
@@ -167,17 +167,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = data['recipe_ingredients']
         tags = data['tags']
 
-        image = data['image']
-
         if not ingredients:
             raise ValidationError(
                 {'errors': 'В рецепте отсутствуют ингредиенты.'})
         if not tags:
             raise ValidationError(
                 {'errors': 'В рецепте отсутствуют теги.'})
-        if not image:
-            raise ValidationError(
-                {'errors': 'В рецепте отсутствует изображение.'})
 
         ingredients_list = []
         for ingredient in ingredients:
@@ -199,6 +194,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         return data
 
+    def validate_image(self, value):
+        if not value:
+            raise ValidationError(
+                {'errors': 'В рецепте отсутствует изображение.'})
+        return value
+
     @transaction.atomic
     def create(self, validated_data):
         """
@@ -209,7 +210,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         recipe = Recipe.objects.create(author=author, **validated_data)
         recipe.tags.set(tags_data)
-        ingredients_index(recipe, ingredients_data)
+        self.ingredients_index(recipe, ingredients_data)
         return recipe
 
     @transaction.atomic
@@ -217,12 +218,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         """
         Method for updating recipe.
         """
-        if 'recipe_ingredients' in validated_data:
-            ingredients_data = validated_data.pop('recipe_ingredients')
-            instance.ingredients.clear()
-            ingredients_index(instance, ingredients_data)
-        if 'tags' in validated_data:
-            instance.tags.set(validated_data.pop('tags'))
+        ingredients_data = validated_data.pop('recipe_ingredients')
+        instance.ingredients.clear()
+        self.ingredients_index(instance, ingredients_data)
+        instance.tags.clear()
+        instance.tags.set(validated_data.pop('tags'))
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
@@ -233,14 +233,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                                               context=self.context)
         return serializer.data
 
-
-def ingredients_index(recipe, ingredients_data):
-    """
-    Method for getting ingredients indexes from getting recipes.
-    """
-    ingredients_index = []
-    for ingredient in ingredients_data:
-        ingredients_index.append(IngredientInRecipe(
-            recipe=recipe, ingredient=ingredient['id'],
-            amount=ingredient['amount']))
-    IngredientInRecipe.objects.bulk_create(ingredients_index)
+    @staticmethod
+    def ingredients_index(recipe, ingredients_data):
+        """
+        Method for getting ingredients indexes from getting recipes.
+        """
+        ingredients_index = []
+        for ingredient in ingredients_data:
+            ingredients_index.append(IngredientInRecipe(
+                recipe=recipe, ingredient=ingredient['id'],
+                amount=ingredient['amount']))
+        IngredientInRecipe.objects.bulk_create(ingredients_index)
