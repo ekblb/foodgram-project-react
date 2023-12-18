@@ -65,7 +65,9 @@ class UserViewSet(DjoserUserViewSet):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if Subscription.objects.filter(user=user, author=author).delete():
+        subscription_delete = Subscription.objects.filter(
+            user=user, author=author).delete()
+        if subscription_delete[0] != 0:
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response('Такой подписки не существует.',
                         status=status.HTTP_400_BAD_REQUEST)
