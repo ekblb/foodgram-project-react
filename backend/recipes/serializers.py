@@ -3,10 +3,9 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 from rest_framework.exceptions import ValidationError
 
-from users.serializers import UserRetrieveSerializer
-
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
                             Recipe, ShoppingCart, Tag)
+from users.serializers import UserRetrieveSerializer
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):

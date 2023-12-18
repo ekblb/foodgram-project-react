@@ -1,8 +1,7 @@
 from rest_framework import serializers, validators
 
 from recipes.models import Recipe
-
-from users.models import User, Subscription
+from users.models import Subscription, User
 
 
 class UserRetrieveSerializer(serializers.ModelSerializer):

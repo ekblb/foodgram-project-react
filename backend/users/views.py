@@ -5,11 +5,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from foodgram.pagination import PageNumberLimitPagination
-
-from users.models import User, Subscription
-from users.serializers import (UserRetrieveSerializer,
-                               SubscriptionCreateSerializer,
-                               SubscriptionRetrieveSerializer)
+from users.models import Subscription, User
+from users.serializers import (SubscriptionCreateSerializer,
+                               SubscriptionRetrieveSerializer,
+                               UserRetrieveSerializer)
 
 
 class UserViewSet(DjoserUserViewSet):
