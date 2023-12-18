@@ -56,7 +56,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
-        if model.objects.filter(recipe=recipe, user=user).delete() is []:
+        delete_recipe = model.objects.filter(recipe=recipe, user=user).delete()
+        if delete_recipe[0] is None:
             return Response({'errors': 'Данный рецепт не добавлен.'},
                             status=status.HTTP_400_BAD_REQUEST)
         return Response({}, status=status.HTTP_204_NO_CONTENT)
