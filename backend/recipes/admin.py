@@ -2,8 +2,8 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
-                     ShoppingCart, Tag)
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
+                            Recipe, ShoppingCart, Tag)
 
 
 class IngredientResource(resources.ModelResource):

@@ -5,8 +5,8 @@ from rest_framework.exceptions import ValidationError
 
 from users.serializers import UserRetrieveSerializer
 
-from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
-                     ShoppingCart, Tag)
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
+                            Recipe, ShoppingCart, Tag)
 
 
 class FavoriteRecipeSerializer(serializers.ModelSerializer):

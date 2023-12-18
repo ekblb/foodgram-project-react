@@ -16,12 +16,14 @@ from rest_framework.response import Response
 from foodgram.pagination import PageNumberLimitPagination
 from foodgram.permissions import AuthorOrReadOnly
 
-from .filters import IngredientFilter, RecipeFilters
-from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
-from .serializers import (FavoriteRecipeSerializer, IngredientInRecipe,
-                          IngredientSerializer, RecipeCreateSerializer,
-                          RecipeRetrieveSerializer, ShoppingCartSerializer,
-                          TagSerializer)
+from recipes.filters import IngredientFilter, RecipeFilters
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+                            ShoppingCart, Tag)
+from recipes.serializers import (FavoriteRecipeSerializer, IngredientInRecipe,
+                                 IngredientSerializer, RecipeCreateSerializer,
+                                 RecipeRetrieveSerializer,
+                                 ShoppingCartSerializer,
+                                 TagSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

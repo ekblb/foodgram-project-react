@@ -1,8 +1,8 @@
-from rest_framework import serializers
+from rest_framework import serializers, validators
 
 from recipes.models import Recipe
 
-from .models import User, Subscription
+from users.models import User, Subscription
 
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
@@ -14,12 +14,9 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         '''Method for defining user's subscriptions.'''
         request = self.context.get('request')
-        if (request and request.user.is_authenticated
-            and Subscription.objects.filter(
-                author=obj.id,
-                user=request.user.id).exists()):
-            return True
-        return False
+        return (request and request.user.is_authenticated
+                and Subscription.objects.filter(author=obj.id,
+                                                user=request.user.id).exists())
 
     class Meta:
         model = User
@@ -87,3 +84,7 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ('author', 'user')
+        validators = [validators.UniqueTogetherValidator(
+            queryset=Subscription.objects.all(),
+            fields=('author', 'user'),
+            message='Подписка уже существует.')]
