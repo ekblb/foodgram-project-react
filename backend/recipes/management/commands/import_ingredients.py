@@ -13,6 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with open('recipes/data/ingredients.csv', encoding='utf-8') as file:
-            file_reader = csv.DictReader(file)
+            file_reader = csv.reader(file)
             for row in file_reader:
-                Ingredient.objects.bulk_create(Ingredient(**row))
+                name, measurement_unit = row
+                Ingredient.objects.get_or_create(
+                    name=name, measurement_unit=measurement_unit)
