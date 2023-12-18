@@ -76,7 +76,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = "users.CustomUser"
+AUTH_USER_MODEL = "users.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -99,7 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 DJOSER = {
     'SERIALIZERS': {
-        'user': 'users.serializers.CustomUserRetrieveSerializer'
+        'user': 'users.serializers.UserRetrieveSerializer'
     },
     'HIDE_USERS': False,
     'PERMISSIONS': {

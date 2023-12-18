@@ -3,7 +3,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 from rest_framework.exceptions import ValidationError
 
-from users.serializers import CustomUserRetrieveSerializer
+from users.serializers import UserRetrieveSerializer
 
 from .models import (FavoriteRecipe, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingCart, Tag)
@@ -103,7 +103,7 @@ class RecipeRetrieveSerializer(serializers.ModelSerializer):
     """
     Serializer for Recipe Model (GET method).
     """
-    author = CustomUserRetrieveSerializer(read_only=True)
+    author = UserRetrieveSerializer(read_only=True)
     ingredients = IngredientInRecipeRetrieveSerializer(
         source='recipe_ingredients', many=True)
     tags = TagSerializer(many=True, read_only=True)

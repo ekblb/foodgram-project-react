@@ -2,12 +2,12 @@ from rest_framework import serializers
 
 from recipes.models import Recipe
 
-from .models import CustomUser, Subscription
+from .models import User, Subscription
 
 
-class CustomUserRetrieveSerializer(serializers.ModelSerializer):
+class UserRetrieveSerializer(serializers.ModelSerializer):
     """
-    Serializer for CustomUser Model (GET method).
+    Serializer for User Model (GET method).
     """
     is_subscribed = serializers.SerializerMethodField()
 
@@ -22,7 +22,7 @@ class CustomUserRetrieveSerializer(serializers.ModelSerializer):
         return False
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed')
         read_only_fields = ('email', 'username', 'first_name', 'last_name',
@@ -40,7 +40,7 @@ class SubscriptionRecipeSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
+class SubscriptionRetrieveSerializer(UserRetrieveSerializer):
     """
     Serializer for getting users subscriptions
     (GET method).
@@ -66,7 +66,7 @@ class SubscriptionRetrieveSerializer(CustomUserRetrieveSerializer):
         return SubscriptionRecipeSerializer(recipes, many=True,
                                             context={'request': request}).data
 
-    class Meta(CustomUserRetrieveSerializer.Meta):
+    class Meta(UserRetrieveSerializer.Meta):
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count')
 

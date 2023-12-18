@@ -6,7 +6,7 @@ from django.db import models
 from foodgram.constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
                                 MAX_LENGHT_NAME, MAX_LENGHT_SLUG)
 
-CustomUser = get_user_model()
+User = get_user_model()
 
 
 class Tag(models.Model):
@@ -54,7 +54,7 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     author = models.ForeignKey(
-        CustomUser,
+        User,
         verbose_name='Автор рецепта',
         related_name='recipe_author',
         on_delete=models.CASCADE)
@@ -129,7 +129,7 @@ class FavoriteRecipe(models.Model):
         related_name='favorite_recipe',
         on_delete=models.CASCADE)
     user = models.ForeignKey(
-        CustomUser,
+        User,
         verbose_name='Пользователь',
         related_name='favorite_user',
         on_delete=models.CASCADE)
@@ -152,7 +152,7 @@ class ShoppingCart(models.Model):
         related_name='shopping_cart_recipe',
         on_delete=models.CASCADE)
     user = models.ForeignKey(
-        CustomUser,
+        User,
         verbose_name='Пользователь',
         related_name='shopping_cart_user',
         on_delete=models.CASCADE)

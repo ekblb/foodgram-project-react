@@ -6,20 +6,20 @@ from rest_framework.response import Response
 
 from foodgram.pagination import PageNumberLimitPagination
 
-from .models import CustomUser, Subscription
-from .serializers import (CustomUserRetrieveSerializer,
+from .models import User, Subscription
+from .serializers import (UserRetrieveSerializer,
                           SubscriptionCreateSerializer,
                           SubscriptionRetrieveSerializer)
 
 
-class CustomUserViewSet(UserViewSet):
+class UserViewSet(UserViewSet):
     """
     Class for viewing users.
     """
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     permission_classes = (permissions.AllowAny,)
     pagination_class = PageNumberLimitPagination
-    serializer_class = CustomUserRetrieveSerializer
+    serializer_class = UserRetrieveSerializer
 
     @action(detail=False, methods=['GET'],
             permission_classes=[permissions.IsAuthenticated])
@@ -28,7 +28,7 @@ class CustomUserViewSet(UserViewSet):
         Method for getting current user's profile.
         """
         user = self.request.user
-        serializer = CustomUserRetrieveSerializer(
+        serializer = UserRetrieveSerializer(
             user, context={'request': request})
         return Response(serializer.data)
 
@@ -39,7 +39,7 @@ class CustomUserViewSet(UserViewSet):
         Method for getting current user's subscriptions.
         """
         user = request.user
-        subscriptions = CustomUser.objects.filter(
+        subscriptions = User.objects.filter(
             subscription_author__user=user)
         subscriptions_page = self.paginate_queryset(subscriptions)
         serializer = SubscriptionRetrieveSerializer(
@@ -53,7 +53,7 @@ class CustomUserViewSet(UserViewSet):
         Method for creating and deleting user's subscription.
         """
         user = request.user
-        author = get_object_or_404(CustomUser, id=id)
+        author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
             if user == author:
