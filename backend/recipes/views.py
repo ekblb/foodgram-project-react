@@ -13,8 +13,8 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from foodgram.pagination import PageNumberLimitPagination
-from foodgram.permissions import AuthorOrReadOnly
+from recipes.pagination import PageNumberLimitPagination
+from recipes.permissions import AuthorOrReadOnly
 from recipes.filters import IngredientFilter, RecipeFilters
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                             Tag)
@@ -38,11 +38,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method in ['POST', 'PATCH']:
             return RecipeCreateSerializer
         return RecipeRetrieveSerializer
-
-    # без переопределения метода ниже не проходят 2 теста
-    # с update_recipe_without_ingredients_field // Second User
-    def partial_update(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
 
     def add_recipe(self, serializer_name, request, pk):
         """

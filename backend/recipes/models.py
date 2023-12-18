@@ -4,7 +4,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from foodgram.constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
-                                MAX_LENGHT_NAME, MAX_LENGHT_SLUG)
+                                MAX_LENGHT_NAME, MAX_LENGHT_SLUG,
+                                MIN_LIMIT_COOKING_TIME, MAX_LIMIT_COOKING_TIME,
+                                MIN_LIMIT_AMOUNT, MAX_LIMIT_AMOUNT)
 
 User = get_user_model()
 
@@ -78,10 +80,10 @@ class Recipe(models.Model):
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления (мин.)',
         validators=[MinValueValidator(
-            limit_value=1,
+            limit_value=MIN_LIMIT_COOKING_TIME,
             message='Значение не может быть меньше 1 мин.'),
             MaxValueValidator(
-                limit_value=2147483647,
+                limit_value=MAX_LIMIT_COOKING_TIME,
                 message='Значение не может быть больше 2147483647 мин.')])
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
@@ -110,10 +112,10 @@ class IngredientInRecipe(models.Model):
     amount = models.PositiveIntegerField(
         verbose_name='Количество',
         validators=[MinValueValidator(
-            limit_value=1,
+            limit_value=MIN_LIMIT_AMOUNT,
             message='Значение не может быть меньше 1.'),
             MaxValueValidator(
-                limit_value=2147483647,
+                limit_value=MAX_LIMIT_AMOUNT,
                 message='Значение не может быть больше 2147483647 мин.')])
 
     class Meta:
