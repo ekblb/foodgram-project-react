@@ -15,4 +15,4 @@ class Command(BaseCommand):
         with open('recipes/data/ingredients.csv', encoding='utf-8') as file:
             file_reader = csv.DictReader(file)
             for row in file_reader:
-                Ingredient.objects.bulk_create(**row)
+                Ingredient.objects.bulk_create(Ingredient(**row))
