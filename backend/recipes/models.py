@@ -5,8 +5,8 @@ from django.db import models
 
 from foodgram.constants import (MAX_LENGHT_COLOR, MAX_LENGHT_MEASUREMENT,
                                 MAX_LENGHT_NAME, MAX_LENGHT_SLUG,
-                                MIN_LIMIT_COOKING_TIME, MAX_LIMIT_COOKING_TIME,
-                                MIN_LIMIT_AMOUNT, MAX_LIMIT_AMOUNT)
+                                MAX_LIMIT_AMOUNT, MAX_LIMIT_COOKING_TIME,
+                                MIN_LIMIT_AMOUNT, MIN_LIMIT_COOKING_TIME)
 
 User = get_user_model()
 
