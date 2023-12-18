@@ -99,7 +99,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 DJOSER = {
     'SERIALIZERS': {
-        'user': 'users.serializers.UserRetrieveSerializer'
+        'user': 'users.serializers.UserRetrieveSerializer',
+        'current_user': 'users.serializers.UserRetrieveSerializer'
     },
     'HIDE_USERS': False,
     'PERMISSIONS': {
