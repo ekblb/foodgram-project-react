@@ -20,16 +20,21 @@ class UserViewSet(DjoserUserViewSet):
     pagination_class = PageNumberLimitPagination
     serializer_class = UserRetrieveSerializer
 
-    @action(detail=False, methods=['GET'],
-            permission_classes=[permissions.IsAuthenticated])
-    def me(self, request):
-        """
-        Method for getting current user's profile.
-        """
-        user = self.request.user
-        serializer = UserRetrieveSerializer(
-            user, context={'request': request})
-        return Response(serializer.data)
+    def get_permissions(self):
+        if self.action == 'me':
+            self.permission_classes = [permissions.IsAuthenticated]
+        return super().get_permissions()
+
+    # @action(detail=False, methods=['GET'],
+    #         permission_classes=[permissions.IsAuthenticated])
+    # def me(self, request):
+    #     """
+    #     Method for getting current user's profile.
+    #     """
+    #     user = self.request.user
+    #     serializer = UserRetrieveSerializer(
+    #         user, context={'request': request})
+    #     return Response(serializer.data)
 
     @action(methods=['GET'], detail=False,
             permission_classes=[permissions.IsAuthenticated])
